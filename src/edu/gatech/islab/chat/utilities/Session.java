@@ -1,11 +1,10 @@
 package edu.gatech.islab.chat.utilities;
 
-public interface Session {
+import edu.gatech.islab.chat.utilities.xmpp.XMPPUtility;
 
-    public void registerSession();
-
-    public boolean validateSession();
-
-    public void unregisterSession();
-
+public abstract class Session {
+    
+    public XMPPUtility getNewSession() {
+        return null;
+    }    
 }

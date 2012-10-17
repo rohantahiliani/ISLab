@@ -39,6 +39,8 @@ public abstract class XMPPUtility {
         connect();
     }
 
+    public abstract List<User> getFriendList();
+
     private void connect() {
         try {
             this.connection.connect();
@@ -56,7 +58,7 @@ public abstract class XMPPUtility {
             return this.chatMap.get(recipient);
         }
         
-        Chat chat = this.chatManager.createChat(recipient.getUserName(), null);
+        Chat chat = this.chatManager.createChat(recipient.getLogin(), null);
         this.chatMap.put(recipient, chat);
         
         return chat;
@@ -78,6 +80,7 @@ public abstract class XMPPUtility {
             try {
                 this.connection.login(user, password);
             } catch(XMPPException ex) {
+                ex.printStackTrace();
             }
         }
         
@@ -88,6 +91,7 @@ public abstract class XMPPUtility {
         try {
             chat.sendMessage(message);
         } catch(XMPPException ex) {
+            ex.printStackTrace();
         }
     }
 

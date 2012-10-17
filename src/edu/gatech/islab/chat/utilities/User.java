@@ -1,16 +1,26 @@
 package edu.gatech.islab.chat.utilities;
 
-public interface User {
+public abstract class User {
     
-    public String getUserName();
+    public abstract String getUserName();
 
-    public String getUserNick();
+    public abstract String getUserNick();
 
-    public String getLogin();
+    public abstract String getLogin();
     
-    public boolean hasGoogleLogin();
+    public boolean hasGoogleLogin() {
+        return false;
+    }
 
-    public boolean hasFacebookLogin();
+    public boolean hasFacebookLogin() {
+        return false;
+    }
 
-    public boolean hasYahooLogin();
+    public boolean hasYahooLogin() {
+        return false;
+    }
+
+    public abstract boolean equals(Object user);
+    
+    public abstract String toString();
 }

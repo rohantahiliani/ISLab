@@ -1,6 +1,6 @@
 package edu.gatech.islab.chat.utilities;
 
-public class GoogleUser implements User {
+public class GoogleUser extends User {
 
     private String username;
     private String login;
@@ -22,20 +22,21 @@ public class GoogleUser implements User {
         return this.login;
     }
     
+    @Override
     public boolean hasGoogleLogin() {
-        return true;
-    }
-
-    public boolean hasFacebookLogin() {
-        return true;
-    }
-
-    public boolean hasYahooLogin() {
         return true;
     }
 
     @Override
     public String toString() {
         return this.username + " " + this.login;
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        GoogleUser that = (GoogleUser) user;
+
+        return this.username.equals(that.username) && 
+            this.login.equals(that.login);
     }
 }

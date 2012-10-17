@@ -26,7 +26,6 @@ public class GoogleXMPPUtility extends XMPPUtility {
                 friends.add(user);
             }
         }
-        
         return friends;
     }
 }
