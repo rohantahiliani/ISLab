@@ -2,7 +2,10 @@ package edu.gatech.islab.chat.utilities.xmpp;
 
 import edu.gatech.islab.chat.utilities.User;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.jivesoftware.smack.Connection;
@@ -10,6 +13,8 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -21,8 +26,7 @@ public abstract class XMPPUtility {
     private Map<User, Chat> chatMap;
 
     protected XMPPUtility() {
-        this.connection = new XMPPConnection("jabber.org");
-        connect();
+        throw new NullPointerException("Illegal Connection Attempt");
     }
 
     protected XMPPUtility(String server) {
@@ -85,6 +89,13 @@ public abstract class XMPPUtility {
             chat.sendMessage(message);
         } catch(XMPPException ex) {
         }
+    }
+
+    public Collection<RosterEntry> getRosterEntries() {
+        Roster roster = this.connection.getRoster();
+        Collection<RosterEntry> rosterEntries = roster.getEntries();
+
+        return rosterEntries;
     }
 
     public void disconnect() {

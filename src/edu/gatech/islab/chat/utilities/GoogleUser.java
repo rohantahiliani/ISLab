@@ -3,10 +3,11 @@ package edu.gatech.islab.chat.utilities;
 public class GoogleUser implements User {
 
     private String username;
-    private String usernick;
+    private String login;
 
-    public GoogleUser(String username) {
+    public GoogleUser(String login, String username) {
         this.username = username;
+        this.login = login;
     }
 
     public String getUserName() {
@@ -18,7 +19,7 @@ public class GoogleUser implements User {
     }
 
     public String getLogin() {
-        return "";
+        return this.login;
     }
     
     public boolean hasGoogleLogin() {
@@ -31,5 +32,10 @@ public class GoogleUser implements User {
 
     public boolean hasYahooLogin() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return this.username + " " + this.login;
     }
 }
