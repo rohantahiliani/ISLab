@@ -1,4 +1,4 @@
-<project name="ISLab" default="compile" basedir=".">
+<project name="ISLab" default="dist" basedir=".">
     <description>
         Build ISLab Chat Client Project
     </description>
@@ -6,6 +6,9 @@
   <property name="src" location="src"/>
   <property name="lib" location="libs"/>
   <property name="build" location="build"/>
+  <property name="serdep" location="serdep"/>
+  <property name="serloc" location="servlet"/>
+  <property name="dist" location="dist"/>
   <!-- <property name="dist"  location="dist"/> -->
 
   <target name="init">
@@ -22,9 +25,27 @@
       <classpath>
         <pathelement location="${lib}/smack.jar"/>
       </classpath>
+      <!--<compilerarg value="-Xlint"/>-->
     </javac>
   </target>
 
+  <target name="servlet" description="Compile the Servlet" 
+          depends="dist">
+    <mkdir dir="${serdep}"/>
+    <javac srcdir="${serloc}" destdir="${serdep}">
+      <classpath>
+        <pathelement location="${dist}/lib/islab.jar"/>
+      </classpath>
+      <!--<compilerarg value="-Xlint"/>-->
+    </javac>
+    <copy todir="/home/rohan/Downloads/tomcat6/webapps/islab/WEB-INF/classes">
+      <fileset dir="${serdep}"/>
+    </copy>
+    <copy todir="/home/rohan/Downloads/tomcat6/webapps/islab/WEB-INF/lib">
+      <fileset dir="${dist}/lib"/>
+      <fileset dir="${lib}"/>
+    </copy>
+  </target>
 
   <target name="dist" depends="compile"
         description="generate the distribution" >
@@ -32,13 +53,14 @@
     <mkdir dir="${dist}/lib"/>
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/lib/MyProject-${DSTAMP}.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/lib/islab.jar" basedir="${build}"/>
   </target>
 
   <target name="clean"
         description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
-    <!--<delete dir="${dist}"/>-->
+    <delete dir="${dist}"/>
+    <delete dir="${serdep}"/>
   </target>
 </project>

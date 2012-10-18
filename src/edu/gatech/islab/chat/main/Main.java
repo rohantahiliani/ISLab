@@ -3,6 +3,7 @@ package edu.gatech.islab.chat.main;
 import edu.gatech.islab.chat.utilities.*;
 import edu.gatech.islab.chat.utilities.xmpp.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
@@ -16,12 +17,14 @@ public class Main {
         userSession = new HashMap<User, Session>();
     }
 
-    public void doOperation(Object args[]) {
+    public Object[] doOperation(ArrayList<Object> args) {
         
-        Operation operation = (Operation)args[0];
-        AccountType type = (AccountType)args[1];
-        String username = (String)args[2];
+        Operation operation = (Operation)args.get(0);
+        AccountType type = (AccountType)args.get(1);
+        String username = (String)args.get(2);
         User user = userMap.get(username);
+
+        Object[] retArray = null;
         
         if(user == null) {
             switch(type) {
@@ -51,26 +54,28 @@ public class Main {
         
         switch(operation) {
         case LOGIN:
-            String pass = (String)args[3];
+            String pass = (String)args.get(3);
             xmpp.login(username, pass);
             break;
 
         case SENDMESSAGE:
-            String message = (String)args[3];
-            String recipient = (String)args[4];
+            String message = (String)args.get(3);
+            String recipient = (String)args.get(4);
             xmpp.sendMessage(message, new GoogleUser(recipient, recipient));
             break;
 
         case GETFRIENDS:
-            List<String> friends = xmpp.getFriendList();
-            System.out.println(friends);
+            List<User> friends = xmpp.getFriendList();
+            retArray = new Object[]{friends};
             break;
 
         case DISCONNECT:
             xmpp.disconnect();
+            userMap.remove(user);
+            userSession.remove(user);
             break;
         }
-        
+        return retArray;
     }
 
 }

@@ -19,4 +19,17 @@ public enum Operation {
         }
     }
 
+    public static Operation getType(String value) {
+        if(value.equals("LOGIN")) {
+            return Operation.LOGIN;
+        } else if(value.equals("DISCONNECT")) {
+            return Operation.DISCONNECT;
+        } else if(value.equals("SENDMESSAGE")) {
+            return Operation.SENDMESSAGE;
+        } else if(value.equals("GETFRIENDS")) {
+            return Operation.GETFRIENDS;
+        } else {
+            return Operation.NULL;
+        }
+    }
 }

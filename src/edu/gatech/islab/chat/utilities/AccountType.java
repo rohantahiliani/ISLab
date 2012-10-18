@@ -16,4 +16,16 @@ public enum AccountType {
             return AccountType.NULL;
         }
     }
+
+    public static AccountType getType(String value) {
+        if(value.equals("GOOGLE")) {
+            return AccountType.GOOGLE;
+        } else if(value.equals("FACEBOOK")) {
+            return AccountType.FACEBOOK;
+        } else if(value.equals("YAHOO")) {
+            return AccountType.YAHOO;
+        } else {
+            return AccountType.NULL;
+        }
+    }
 }
