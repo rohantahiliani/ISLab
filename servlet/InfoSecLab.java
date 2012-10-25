@@ -46,7 +46,6 @@ public class InfoSecLab extends HttpServlet {
         helper = new LabHelper(request, writer);
         
         if(!helper.validateParams()) {
-            helper.writeError("Invalid parameter list");
             return;
         }
 
@@ -72,6 +71,7 @@ public class InfoSecLab extends HttpServlet {
         if(username == null || 
            sessionId == null ||
            operation == Operation.NULL) {
+
             helper.writeError("Invalid parameter values");
             return;
         } 

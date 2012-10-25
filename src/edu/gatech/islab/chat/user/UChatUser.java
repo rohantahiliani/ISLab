@@ -1,11 +1,11 @@
 package edu.gatech.islab.chat.user;
 
-public class GoogleUser extends User {
+public class UChatUser extends User {
 
     private String username;
     private String login;
 
-    public GoogleUser(String login, String username) {
+    public UChatUser(String login, String username) {
         this.username = username;
         this.login = login;
     }
@@ -23,7 +23,7 @@ public class GoogleUser extends User {
     }
     
     @Override
-    public boolean hasGoogleLogin() {
+    public boolean hasUChatLogin() {
         return true;
     }
 
@@ -34,7 +34,7 @@ public class GoogleUser extends User {
 
     @Override
     public boolean equals(Object user) {
-        GoogleUser that = (GoogleUser) user;
+        UChatUser that = (UChatUser) user;
 
         return this.username.equals(that.username) && 
             this.login.equals(that.login);

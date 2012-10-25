@@ -23,7 +23,7 @@ public class Main {
     }
 
     public Object[] doOperation(HashMap<String, Object> args) {
-        
+
         Operation operation = (Operation)args.get("Operation");
         AccountType type = (AccountType)args.get("AccountType");
         String username = (String)args.get("Username");
@@ -48,12 +48,10 @@ public class Main {
             return new Object[]{"Failure"};
         } 
 
-        XMPPUtility xmpp = session.getNewSession();
-
         switch(operation) {
         case LOGIN:
             String pass = (String)args.get("Password");
-            if(xmpp.login(username, pass)) {
+            if(session.login(username, pass)) {
                 retArray = new Object[]{"Success", session.getSessionId()};
             } else {
                 retArray = new Object[]{"Failure"};
@@ -63,16 +61,21 @@ public class Main {
         case SENDMESSAGE:
             String message = (String)args.get("Message");
             String recipient = (String)args.get("Recipient");
-            xmpp.sendMessage(message, new GoogleUser(recipient, recipient));
+            if(session instanceof XMPPSession) {
+                ((XMPPSession)session).sendMessage
+                    (message, new GoogleUser(recipient, recipient));
+            }
             break;
 
         case GETFRIENDS:
-            List<User> friends = xmpp.getFriendList();
-            retArray = new Object[]{friends};
+            if(session instanceof XMPPSession) {
+                List<User> friends = ((XMPPSession)session).getFriendList();
+                retArray = new Object[]{friends};
+            }
             break;
 
         case DISCONNECT:
-            if(!xmpp.disconnect()) {
+            if(!session.disconnect()) {
                 retArray = new Object[]{"Success"};
             } else {
                 retArray = new Object[]{"Failure"};

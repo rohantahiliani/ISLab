@@ -64,17 +64,6 @@ public abstract class XMPPUtility {
         return chat;
     }
 
-    public boolean isSane(String text) {
-        return isSane(new String[]{text});
-    }
-
-    public boolean isSane(String[] allText) {
-        for(String text: allText) {
-            
-        }
-        return true;
-    }
-
     public boolean login(String user, String password) {
         if(!this.connection.isConnected()) {
             connect();
@@ -82,13 +71,11 @@ public abstract class XMPPUtility {
             return true;
         }
 
-        if(isSane(new String[]{user,password})) {
-            try {
-                this.connection.login(user, password);
-                return this.connection.isAuthenticated();
-            } catch(XMPPException ex) {
-                ex.printStackTrace();
-            }
+        try {
+            this.connection.login(user, password);
+            return this.connection.isAuthenticated();
+        } catch(XMPPException ex) {
+            ex.printStackTrace();
         }
         return false;
     }

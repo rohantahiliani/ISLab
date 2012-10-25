@@ -1,13 +1,9 @@
 package edu.gatech.islab.chat.session;
 
-import edu.gatech.islab.chat.xmpp.XMPPUtility;
-
 public abstract class Session {
 
     public String sessionId;
     
-    public abstract XMPPUtility getNewSession();
-
     public void setSessionId(String id) {
         this.sessionId = id;
     }
@@ -15,4 +11,8 @@ public abstract class Session {
     public String getSessionId() {
         return this.sessionId;
     }
+
+    public abstract boolean login(String username, String password);   
+ 
+    public abstract boolean disconnect();
 }

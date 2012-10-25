@@ -75,14 +75,20 @@ public class LabHelper {
     public boolean validateParams() {
         initRequiredParams();
 
+        if(!isSane(((String[])paramList.toArray()))) {
+            writer.println("Invalid parameter values");
+            return false;
+        }
+
         for(String parameter: paramList) {
             if(!acceptParams.contains(parameter)) {
-                writer.println(parameter);
+                writer.println("Invalid parameter");
                 return false;
             }
         }
+
         if(!paramList.containsAll(requiredParams)) {
-            writer.println(paramList);
+            writer.println("Required parameter missing");
             return false;
         }
 
@@ -95,7 +101,7 @@ public class LabHelper {
 
     public String getParam(String param) {
         if(!containsParam(param)) {
-            writeError("Invalid parameter: " + param);
+            writeError("Invalid parameter");
             return null;
         }
         return paramValues.get(param)[0];
@@ -103,6 +109,17 @@ public class LabHelper {
 
     public void writeError(String error) {
         writer.println(error);
+    }
+
+    public boolean isSane(String text) {
+        return isSane(new String[]{text});
+    }
+
+    public boolean isSane(String[] allText) {
+        for(String text: allText) {
+            
+        }
+        return true;
     }
 
 }
