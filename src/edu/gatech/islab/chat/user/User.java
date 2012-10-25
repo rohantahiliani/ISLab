@@ -1,4 +1,4 @@
-package edu.gatech.islab.chat.utilities;
+package edu.gatech.islab.chat.user;
 
 public abstract class User {
     
@@ -17,6 +17,10 @@ public abstract class User {
     }
 
     public boolean hasYahooLogin() {
+        return false;
+    }
+
+    public boolean hasUChatLogin() {
         return false;
     }
 

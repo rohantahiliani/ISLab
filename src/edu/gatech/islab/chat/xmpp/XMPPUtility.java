@@ -1,6 +1,6 @@
-package edu.gatech.islab.chat.utilities.xmpp;
+package edu.gatech.islab.chat.xmpp;
 
-import edu.gatech.islab.chat.utilities.User;
+import edu.gatech.islab.chat.user.User;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,8 +21,8 @@ import org.jivesoftware.smack.packet.Message;
 
 public abstract class XMPPUtility {
 
-    Connection connection;
-    ChatManager chatManager;
+    private Connection connection;
+    private ChatManager chatManager;
     private Map<User, Chat> chatMap;
 
     protected XMPPUtility() {
@@ -75,15 +75,22 @@ public abstract class XMPPUtility {
         return true;
     }
 
-    public void login(String user, String password) {
+    public boolean login(String user, String password) {
+        if(!this.connection.isConnected()) {
+            connect();
+        } else if(this.connection.isAuthenticated()) {
+            return true;
+        }
+
         if(isSane(new String[]{user,password})) {
             try {
                 this.connection.login(user, password);
+                return this.connection.isAuthenticated();
             } catch(XMPPException ex) {
                 ex.printStackTrace();
             }
         }
-        
+        return false;
     }
 
     public void sendMessage(String message, User recipient) {
@@ -102,7 +109,9 @@ public abstract class XMPPUtility {
         return rosterEntries;
     }
 
-    public void disconnect() {
+    public boolean disconnect() {
         this.connection.disconnect();
+        return this.connection.isAuthenticated() &&
+            this.connection.isConnected();
     }
 }

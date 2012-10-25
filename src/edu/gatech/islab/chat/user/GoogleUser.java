@@ -1,4 +1,4 @@
-package edu.gatech.islab.chat.utilities;
+package edu.gatech.islab.chat.user;
 
 public class GoogleUser extends User {
 

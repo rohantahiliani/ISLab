@@ -1,5 +1,7 @@
 package servlet;
 
+import edu.gatech.islab.chat.enums.Operation;
+
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -22,40 +24,65 @@ public class LabHelper {
     private PrintWriter writer;
 
     @SuppressWarnings("unchecked") 
-        public LabHelper(HttpServletRequest request, PrintWriter writer) {
+    public LabHelper(HttpServletRequest request, PrintWriter writer) {
         acceptParams = new HashSet<String>();
-        requiredParams = new LinkedList<String>();
         paramList = Collections.list((Enumeration<String>)request.getParameterNames());
         paramValues = request.getParameterMap();
         this.writer = writer;
         initAcceptParams();
-        initRequiredParams();
     }
 
     public void initAcceptParams() {
         acceptParams.add("Operation");
-        acceptParams.add("User");
+        acceptParams.add("Username");
         acceptParams.add("Password");
         acceptParams.add("Message");
         acceptParams.add("Recipient");
         acceptParams.add("JID");
-        acceptParams.add("AcctType");
+        acceptParams.add("AccountType");
+        acceptParams.add("SessionId");
+        acceptParams.add("warn");
     }
 
     public void initRequiredParams() {
+        requiredParams = new LinkedList<String>();
         requiredParams.add("Operation");
-        requiredParams.add("User");
-        requiredParams.add("AcctType");
+        requiredParams.add("AccountType");
+        String opString = getParam("Operation");
+        if(opString == null) {
+            return;
+        } else {
+            Operation operation = Operation.getType(opString);
+
+            switch(operation) {
+            case LOGIN:
+                requiredParams.add("Username");
+                requiredParams.add("Password");
+                break;
+            case SENDMESSAGE:
+                requiredParams.add("Message");
+                requiredParams.add("Recipient");
+                break;
+            case GETFRIENDS:
+            case DISCONNECT:
+            case NULL:
+            default:
+                break;
+            }
+        }
     }
 
     public boolean validateParams() {
+        initRequiredParams();
+
         for(String parameter: paramList) {
             if(!acceptParams.contains(parameter)) {
+                writer.println(parameter);
                 return false;
             }
         }
-        
         if(!paramList.containsAll(requiredParams)) {
+            writer.println(paramList);
             return false;
         }
 
@@ -68,7 +95,7 @@ public class LabHelper {
 
     public String getParam(String param) {
         if(!containsParam(param)) {
-            writeError("Invalid parameter list");
+            writeError("Invalid parameter: " + param);
             return null;
         }
         return paramValues.get(param)[0];

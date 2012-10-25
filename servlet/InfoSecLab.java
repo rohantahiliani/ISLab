@@ -2,12 +2,11 @@ package servlet;
 
 import edu.gatech.islab.chat.main.Main;
 
-import edu.gatech.islab.chat.utilities.AccountType;
-import edu.gatech.islab.chat.utilities.Operation;
-import edu.gatech.islab.chat.utilities.User;
+import edu.gatech.islab.chat.enums.*;
+import edu.gatech.islab.chat.user.User;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +17,8 @@ import javax.servlet.http.*;
 
 @SuppressWarnings("serial")
 public class InfoSecLab extends HttpServlet {
+
+    private String DOMAIN = "";
 
     private Main obj;
     private LabHelper helper;
@@ -36,27 +37,50 @@ public class InfoSecLab extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, java.io.IOException {
 
+        DOMAIN = request.getHeader("referer");
+
+        response.addHeader("Access-Control-Allow-Origin", "*");
+	response.setContentType("text/html");
+
         writer = response.getWriter();
         helper = new LabHelper(request, writer);
-
+        
         if(!helper.validateParams()) {
             helper.writeError("Invalid parameter list");
             return;
         }
 
-        String user = helper.getParam("User");
+        String username = null;
+        String sessionId = null;
+        AccountType accountType = AccountType.NULL;
         Operation operation = Operation.getType(helper.getParam("Operation"));
-        AccountType acctType = AccountType.getType(helper.getParam("AcctType"));
 
-        if(operation == Operation.NULL || acctType == AccountType.NULL) {
+        if(operation == Operation.LOGIN) {
+            username = helper.getParam("Username");
+            accountType = AccountType.getType(helper.getParam("AccountType"));
+            sessionId = "";
+        } else {
+            for(Cookie cookie: request.getCookies()) {
+                if(cookie.getName().equals("SessionId")) {
+                    sessionId = cookie.getValue();
+                } else if(cookie.getName().equals("Username")) {
+                    username = cookie.getValue();
+                }
+            }
+        } 
+        
+        if(username == null || 
+           sessionId == null ||
+           operation == Operation.NULL) {
             helper.writeError("Invalid parameter values");
             return;
-        }
+        } 
 
-        ArrayList<Object> params = new ArrayList<Object>();
-        params.add(operation);
-        params.add(acctType);
-        params.add(user);
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("Operation", operation);
+        params.put("AccountType", accountType);
+        params.put("Username", username);
+        params.put("SessionId", sessionId);
 
         switch(operation) {
         case LOGIN:
@@ -64,7 +88,7 @@ public class InfoSecLab extends HttpServlet {
             if(password == null) {
                 return;
             }
-            params.add(password);
+            params.put("Password", password);
             break;
 
         case SENDMESSAGE:
@@ -74,8 +98,8 @@ public class InfoSecLab extends HttpServlet {
             if(message == null || recipient == null) {
                 return;
             }
-            params.add(message);
-            params.add(recipient);
+            params.put("Message", message);
+            params.put("Recipient", recipient);
 
             break;
 
@@ -85,6 +109,24 @@ public class InfoSecLab extends HttpServlet {
         }
 
         Object[] ret = obj.doOperation(params);
-        writer.println(ret[0]);
+
+        if(ret!=null && ret.length > 0) {
+            switch(operation) {
+            case LOGIN:
+                if(ret.length == 2 && 
+                   ret[0].toString().equals("Success")) {
+
+                    response.addCookie(new Cookie("SessionId", ret[1].toString()));
+                    response.addCookie(new Cookie("Username", username));
+                    response.sendRedirect(DOMAIN + "send.html");
+                }
+                break;
+            default:
+                for(Object retObject: ret) {
+                    writer.println(retObject);
+                }
+                break;
+            }
+        }
     }
 }

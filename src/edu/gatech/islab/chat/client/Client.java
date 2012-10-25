@@ -1,7 +1,7 @@
 package edu.gatech.islab.chat.client;
 
-import edu.gatech.islab.chat.utilities.Session;
-import edu.gatech.islab.chat.utilities.User;
+import edu.gatech.islab.chat.session.Session;
+import edu.gatech.islab.chat.user.User;
 
 import java.util.ArrayList;
 

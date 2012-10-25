@@ -1,7 +1,7 @@
-package edu.gatech.islab.chat.utilities.xmpp;
+package edu.gatech.islab.chat.xmpp;
 
-import edu.gatech.islab.chat.utilities.GoogleUser;
-import edu.gatech.islab.chat.utilities.User;
+import edu.gatech.islab.chat.user.GoogleUser;
+import edu.gatech.islab.chat.user.User;
 
 import java.util.LinkedList;
 import java.util.List;
