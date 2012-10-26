@@ -53,7 +53,7 @@ public class LabHelper {
         if(opString == null) {
             return;
         } else {
-            Operation operation = Operation.getType(opString);
+            Operation operation = Operation.valueOf(opString);
 
             switch(operation) {
             case LOGIN:
