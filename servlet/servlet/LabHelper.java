@@ -53,10 +53,11 @@ public class LabHelper {
         if(opString == null) {
             return;
         } else {
-            Operation operation = Operation.valueOf(opString);
+            Operation operation = Operation.value(opString);
 
             switch(operation) {
             case LOGIN:
+            case REGISTER:
                 requiredParams.add("Username");
                 requiredParams.add("Password");
                 break;

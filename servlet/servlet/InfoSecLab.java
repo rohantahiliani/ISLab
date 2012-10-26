@@ -46,12 +46,11 @@ public class InfoSecLab extends HttpServlet {
 
         String username = null;
         String sessionId = null;
-        AccountType accountType = AccountType.NULL;
-        Operation operation = Operation.valueOf(helper.getParam("Operation"));
+        AccountType accountType = AccountType.value(helper.getParam("AccountType"));
+        Operation operation = Operation.value(helper.getParam("Operation"));
 
         if(operation == Operation.LOGIN || operation == Operation.REGISTER) {
             username = helper.getParam("Username");
-            accountType = AccountType.valueOf(helper.getParam("AccountType"));
             sessionId = "";
         } else if(request.getCookies() != null) {
             for(Cookie cookie: request.getCookies()) {

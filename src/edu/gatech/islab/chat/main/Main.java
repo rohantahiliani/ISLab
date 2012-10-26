@@ -22,16 +22,14 @@ public class Main {
 
     public Object[] doOperation(HashMap<String, Object> args) {
 
-        Operation operation = (Operation)args.get("Operation");
-        AccountType type = (AccountType)args.get("AccountType");
-        String username = (String)args.get("Username");
+        String username = (String) args.get("Username");
+        Operation operation = (Operation) args.get("Operation");
+        AccountType type = (AccountType) args.get("AccountType");
         User user = null;
         Session session = null;
         Object[] retArray = null;
 
-        if(type == null ||
-           type == AccountType.NULL ||
-           operation == null || 
+        if(operation == null || 
            operation == Operation.NULL) {
 
             return new Object[]{"Invalid account type or operation"};
@@ -41,10 +39,12 @@ public class Main {
 
         if(user != null) {
             session = user.getSession();
-        }
+            type = user.getAccountType();
+        } 
 
-        if(user == null || session == null) {            
-            return new Object[]{userMap, "Invalid user or session"};
+        if(user == null || session == null || 
+           type == null || type == AccountType.NULL) {
+            return new Object[]{"Invalid user, session or account type"};
         } 
 
         if((operation != Operation.LOGIN  && operation != Operation.REGISTER) &&
@@ -66,12 +66,13 @@ public class Main {
             break;
 
         case SENDMESSAGE:
-            String message = (String)args.get("Message");
-            String recipient = (String)args.get("Recipient");
-
             if(session instanceof XMPPSession) {
-                ((XMPPSession)session).sendMessage
-                    (message, new User(recipient, recipient, type));
+                String message = (String)args.get("Message");
+                String recipient = (String)args.get("Recipient");
+                if(message != null && recipient != null) {
+                    ((XMPPSession)session).sendMessage
+                        (message, new User(recipient, recipient, type));
+                }
             }
             break;
 

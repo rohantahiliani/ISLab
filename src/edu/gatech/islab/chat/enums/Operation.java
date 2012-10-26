@@ -7,4 +7,15 @@ public enum Operation {
     GETFRIENDS, 
     REGISTER, 
     NULL;
+
+    public static Operation value(String type) {
+        Operation retVal = null;
+        try {
+            retVal = valueOf(type);
+        } catch (IllegalArgumentException ex) {
+            retVal = Operation.NULL;
+        }
+        return retVal;
+    }
+
 }

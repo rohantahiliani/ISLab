@@ -56,9 +56,10 @@ public class User {
         
         if((this.session == null && that.session != null) ||
            (this.session != null && that.session == null) || 
-           !(this.session.equals(that.session))) {
+           (this.session != null && that.session != null &&
+             !this.session.equals(that.session))) {
             return false;
-        }
+        } 
 
         return this.accountType == that.accountType && 
             this.login.equals(that.login) &&
