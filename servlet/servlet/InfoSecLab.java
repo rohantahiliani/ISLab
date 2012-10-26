@@ -3,14 +3,9 @@ package servlet;
 import edu.gatech.islab.chat.main.Main;
 
 import edu.gatech.islab.chat.enums.*;
-import edu.gatech.islab.chat.user.User;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -54,11 +49,11 @@ public class InfoSecLab extends HttpServlet {
         AccountType accountType = AccountType.NULL;
         Operation operation = Operation.getType(helper.getParam("Operation"));
 
-        if(operation == Operation.LOGIN) {
+        if(operation == Operation.LOGIN || operation == Operation.REGISTER) {
             username = helper.getParam("Username");
             accountType = AccountType.getType(helper.getParam("AccountType"));
             sessionId = "";
-        } else {
+        } else if(request.getCookies() != null) {
             for(Cookie cookie: request.getCookies()) {
                 if(cookie.getName().equals("SessionId")) {
                     sessionId = cookie.getValue();
@@ -67,7 +62,7 @@ public class InfoSecLab extends HttpServlet {
                 }
             }
         } 
-        
+
         if(username == null || 
            sessionId == null ||
            operation == Operation.NULL) {
@@ -120,7 +115,6 @@ public class InfoSecLab extends HttpServlet {
                     response.addCookie(new Cookie("Username", username));
                     response.sendRedirect(DOMAIN + "send.html");
                 }
-                break;
             default:
                 for(Object retObject: ret) {
                     writer.println(retObject);

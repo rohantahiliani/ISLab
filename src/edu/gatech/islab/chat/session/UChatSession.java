@@ -14,8 +14,11 @@ public class UChatSession extends Session {
     private DB db;
     private final String insertStmt;
     private final String validLoginQuery;
+    
 
     public UChatSession() {
+        this.sessionType = "UChatSession";
+
         db = DBUtilities.getInstance();
         insertStmt = "INSERT INTO USERS(Username, Password, Salt) " +
             "VALUES(?, ?, ?);";
@@ -24,6 +27,9 @@ public class UChatSession extends Session {
     }
 
     public boolean createUser(String username, String password) {
+        assert username != null;
+        assert password != null;
+
         boolean retVal = false;
         String salt = System.currentTimeMillis() + "";
         String hashedPass = hashPassword(password, salt);
@@ -37,6 +43,9 @@ public class UChatSession extends Session {
 
     @Override
     public boolean login(String username, String password) {
+        assert username != null;
+        assert password != null;
+
         boolean retVal = false;
         Object[] args = new Object[]{username};
         ResultSet result = db.selectCommand(validLoginQuery, args);

@@ -1,6 +1,6 @@
 package edu.gatech.islab.chat.xmpp;
 
-import edu.gatech.islab.chat.user.GoogleUser;
+import edu.gatech.islab.chat.enums.AccountType;
 import edu.gatech.islab.chat.user.User;
 
 import java.util.LinkedList;
@@ -22,7 +22,8 @@ public class GoogleXMPPUtility extends XMPPUtility {
 
         for(RosterEntry entry: getRosterEntries()) {
             if(entry.getType().equals(ItemType.both)) {
-                User user = new GoogleUser(entry.getUser(), entry.getName());
+                User user = new User
+                    (entry.getUser(), entry.getName(), AccountType.GOOGLE);
                 friends.add(user);
             }
         }

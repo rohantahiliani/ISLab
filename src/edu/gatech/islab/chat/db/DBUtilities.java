@@ -16,8 +16,10 @@ public class DBUtilities implements DB {
     }
 
     public static DBUtilities getInstance() {
-        if(instance == null) {
-            instance = new DBUtilities();
+        synchronized(instance) {
+            if(instance == null) {
+                instance = new DBUtilities();
+            }
         }
         return instance;
     }

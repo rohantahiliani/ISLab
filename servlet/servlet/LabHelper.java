@@ -41,6 +41,7 @@ public class LabHelper {
         acceptParams.add("JID");
         acceptParams.add("AccountType");
         acceptParams.add("SessionId");
+        acceptParams.add("CaptchaId");
         acceptParams.add("warn");
     }
 
@@ -75,20 +76,22 @@ public class LabHelper {
     public boolean validateParams() {
         initRequiredParams();
 
-        if(!isSane(((String[])paramList.toArray()))) {
-            writer.println("Invalid parameter values");
-            return false;
+        for(String param: paramList) {
+            if(!isSane(param)) {
+                writer.println("Invalid parameter value: " + param);
+                return false;
+            }
         }
 
         for(String parameter: paramList) {
             if(!acceptParams.contains(parameter)) {
-                writer.println("Invalid parameter");
+                writer.println("Invalid parameter: " + parameter);
                 return false;
             }
         }
 
         if(!paramList.containsAll(requiredParams)) {
-            writer.println("Required parameter missing");
+            writer.println("Required parameter missing:" + paramList);
             return false;
         }
 

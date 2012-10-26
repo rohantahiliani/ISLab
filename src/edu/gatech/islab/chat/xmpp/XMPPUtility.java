@@ -101,4 +101,5 @@ public abstract class XMPPUtility {
         return this.connection.isAuthenticated() &&
             this.connection.isConnected();
     }
+
 }

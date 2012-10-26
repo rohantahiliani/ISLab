@@ -1,30 +1,91 @@
 package edu.gatech.islab.chat.user;
 
-public abstract class User {
+import edu.gatech.islab.chat.enums.AccountType;
+import edu.gatech.islab.chat.session.Session;
+
+public class User {
     
-    public abstract String getUserName();
+    private final String login;
+    private final String username;
+    private final AccountType accountType;
+    private Session session;
 
-    public abstract String getUserNick();
-
-    public abstract String getLogin();
+    protected User() {
+        login = null;
+        username = null;
+        accountType = null;
+    }
     
-    public boolean hasGoogleLogin() {
-        return false;
+    public User(String username, String login, 
+                AccountType accountType) {
+        assert login != null;
+        assert username != null;
+        assert accountType != null && accountType != AccountType.NULL;
+        this.login = login;
+        this.username = username;
+        this.accountType = accountType;
     }
 
-    public boolean hasFacebookLogin() {
-        return false;
+    public AccountType getAccountType() {
+        return this.accountType;
     }
 
-    public boolean hasYahooLogin() {
-        return false;
+    public String getLogin() {
+        return this.login;
     }
-
-    public boolean hasUChatLogin() {
-        return false;
-    }
-
-    public abstract boolean equals(Object user);
     
-    public abstract String toString();
+    public String getUserName() {
+        return this.username;
+    }
+
+    public void setSession(Session session) {
+        assert session != null;
+        this.session = session;
+    }
+
+    public Session getSession() {
+        return this.session;
+    }
+
+    @Override
+    public boolean equals(Object user) {
+        if(user == null) {
+            return false;
+        }
+        User that = (User) user;
+        
+        if((this.session == null && that.session != null) ||
+           (this.session != null && that.session == null) || 
+           !(this.session.equals(that.session))) {
+            return false;
+        }
+
+        return this.accountType == that.accountType && 
+            this.login.equals(that.login) &&
+            this.username.equals(that.username);
+    }
+    
+    @Override
+    public String toString() {
+        return "Login: " + this.login + ", " +
+            "Username: " + this.username + ", " +
+            "AccountType: " + this.accountType + ", " +
+            "Session: " + ((this.session == null) ? 
+                           "NULL" : this.session.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode += 13 + this.login.hashCode();
+        hashCode += 23 + this.username.hashCode();
+        hashCode += 5 + this.accountType.toString().hashCode();
+        if(this.session == null) {
+            hashCode += 3;
+        } else {
+            hashCode += 3 * session.hashCode();
+        }
+        return hashCode;
+    }
+
 }

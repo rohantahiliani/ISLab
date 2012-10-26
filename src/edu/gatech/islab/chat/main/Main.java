@@ -2,7 +2,7 @@ package edu.gatech.islab.chat.main;
 
 import edu.gatech.islab.chat.enums.*;
 import edu.gatech.islab.chat.session.*;
-import edu.gatech.islab.chat.user.*;
+import edu.gatech.islab.chat.user.User;
 import edu.gatech.islab.chat.xmpp.*;
 
 import java.util.ArrayList;
@@ -12,13 +12,11 @@ import java.util.HashMap;
 public class Main {
     
     private HashMap<String, User> userMap;
-    private HashMap<User, Session> userSession;
 
     private MainHelper helper;
 
     public Main() {
         userMap = new HashMap<String, User>();
-        userSession = new HashMap<User, Session>();
         helper = new MainHelper();
     }
 
@@ -36,34 +34,44 @@ public class Main {
            operation == null || 
            operation == Operation.NULL) {
 
-            return new Object[]{"Failure"};
+            return new Object[]{"Invalid account type or operation"};
         }
 
-        getUserAndSession(username, user, session, type, operation);
+        user = getUser(username, type, operation);
 
-        if(user == null || session == null || 
-        (operation != Operation.LOGIN &&
-         !session.getSessionId().equals(args.get("SessionId")))) {
-            
-            return new Object[]{"Failure"};
+        if(user != null) {
+            session = user.getSession();
+        }
+
+        if(user == null || session == null) {            
+            return new Object[]{userMap, "Invalid user or session"};
         } 
+
+        if((operation != Operation.LOGIN  && operation != Operation.REGISTER) &&
+           !session.getSessionId().equals(args.get("SessionId"))) {
+            
+            return new Object[]{"Invalid session"};
+        }
 
         switch(operation) {
         case LOGIN:
+        case REGISTER:
             String pass = (String)args.get("Password");
-            if(session.login(username, pass)) {
+            if(session.login(user.getLogin(), pass)) {
                 retArray = new Object[]{"Success", session.getSessionId()};
+                userMap.put(user.getLogin() + type, user);
             } else {
-                retArray = new Object[]{"Failure"};
+                retArray = new Object[]{"Login Failed"};
             }
             break;
 
         case SENDMESSAGE:
             String message = (String)args.get("Message");
             String recipient = (String)args.get("Recipient");
+
             if(session instanceof XMPPSession) {
                 ((XMPPSession)session).sendMessage
-                    (message, new GoogleUser(recipient, recipient));
+                    (message, new User(recipient, recipient, type));
             }
             break;
 
@@ -78,64 +86,60 @@ public class Main {
             if(!session.disconnect()) {
                 retArray = new Object[]{"Success"};
             } else {
-                retArray = new Object[]{"Failure"};
+                retArray = new Object[]{"Failed to Disconnect"};
             }
-            userMap.remove(user);
-            userSession.remove(user);
+            removeUserSessions(user);
+            break;
+        default:
             break;
         }
         return retArray;
     }
 
-    private void getUserAndSession
-        (String username, User user, Session session, 
-         AccountType type, Operation operation) {
+    private User getUser
+        (String username, AccountType type, Operation operation) {
+
+        User user = null;
 
         user = userMap.get(username + type);
         
         if(user!=null) {
-            switch(type) {
-            case GOOGLE:
-                if(!(user instanceof GoogleUser)) {
-                    user = null;
-                }
-                break;
-            default:
-                break;
-            }
+            if(user.getAccountType() != type) {
+                user = null;
+            } 
         }
 
-        if(user == null && operation == Operation.LOGIN) {
-            switch(type) {
-            case GOOGLE:
-                user = new GoogleUser(username, username);
-                break;
-            default:
-                break;
-            }
-            userMap.put(username + type, user);
-        }
+        if(user == null && 
+           (operation == Operation.LOGIN || operation == Operation.REGISTER)) {
 
-        if(user == null) {
-            return;
-        }
+            user = new User(username, username, type);
 
-        session = userSession.get(user);
-
-        if(session == null) {
+            Session session = null;
             String sessionId = helper.getNewSessionId();
             
             switch(type) {
             case GOOGLE:
                 session = new GoogleSession();
                 break;
+            case UCHAT:
+                session = new UChatSession();
+                break;
             default:
                 break;
             }
+            if(session != null) {
+                session.setSessionId(sessionId);
+                user.setSession(session);
+            }
+        }
 
-            session.setSessionId(sessionId);
-            userSession.put(user, session);
-        } 
+        return user;
+    }
+
+    private void removeUserSessions(User user) {
+        for(AccountType type: AccountType.values()) {
+            userMap.remove(user.getLogin() + type);
+        }
     }
 
 }

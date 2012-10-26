@@ -10,6 +10,10 @@ public class GoogleSession extends XMPPSession {
     
     private XMPPUtility session;
 
+    public GoogleSession() {
+        this.sessionType = "GoogleSession";
+    }
+
     @Override
     public XMPPUtility getSession() {
         if(this.session == null) {

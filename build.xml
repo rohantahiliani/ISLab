@@ -21,7 +21,7 @@
   <target name="compile" depends="init"
         description="Compile the Sources" >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}">
+    <javac srcdir="${src}" destdir="${build}" debug="on" debuglevel="lines,vars,source">
       <classpath>
         <pathelement location="${lib}/smack.jar"/>
       </classpath>
@@ -32,7 +32,7 @@
   <target name="servlet" description="Compile the Servlet" 
           depends="dist">
     <mkdir dir="${serdep}"/>
-    <javac srcdir="${serloc}" destdir="${serdep}">
+    <javac srcdir="${serloc}" destdir="${serdep}" debug="on" debuglevel="lines,vars,source">
       <classpath>
         <pathelement location="${dist}/lib/islab.jar"/>
       </classpath>

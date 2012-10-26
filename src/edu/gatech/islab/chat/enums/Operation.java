@@ -2,7 +2,7 @@ package edu.gatech.islab.chat.enums;
 
 public enum Operation {
     
-    LOGIN, DISCONNECT, SENDMESSAGE, GETFRIENDS, NULL;
+    LOGIN, DISCONNECT, SENDMESSAGE, GETFRIENDS, REGISTER, NULL;
 
     public static Operation getType(int code) {
         switch(code) {
@@ -14,6 +14,8 @@ public enum Operation {
             return Operation.SENDMESSAGE;
         case 3:
             return Operation.GETFRIENDS;
+        case 4:
+            return Operation.REGISTER;
         default:
             return Operation.NULL;
         }
@@ -28,6 +30,8 @@ public enum Operation {
             return Operation.SENDMESSAGE;
         } else if(value.equals("GETFRIENDS")) {
             return Operation.GETFRIENDS;
+        } else if(value.equals("REGISTER")) {
+            return Operation.REGISTER;
         } else {
             return Operation.NULL;
         }
