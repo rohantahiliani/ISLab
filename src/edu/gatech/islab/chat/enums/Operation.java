@@ -6,6 +6,7 @@ public enum Operation {
     SENDMESSAGE, 
     GETFRIENDS, 
     REGISTER, 
+    VALIDATE,
     NULL;
 
     public static Operation value(String type) {

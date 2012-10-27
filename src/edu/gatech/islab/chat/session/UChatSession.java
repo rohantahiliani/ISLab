@@ -13,32 +13,45 @@ public class UChatSession extends Session {
     
     private DB db;
     private final String insertStmt;
+    private final String userExistsQuery;
     private final String validLoginQuery;
-    
 
     public UChatSession() {
         this.sessionType = "UChatSession";
 
         db = DBUtilities.getInstance();
-        insertStmt = "INSERT INTO USERS(Username, Password, Salt) " +
+        insertStmt = "INSERT INTO Users(Username, Password, Salt) " +
             "VALUES(?, ?, ?);";
+        userExistsQuery = "SELECT Username FROM Users " +
+            "WHERE Username = ?";
         validLoginQuery = "SELECT Username, Password, Salt FROM Users " +
             "WHERE Username = ?";
+
     }
 
-    public boolean createUser(String username, String password) {
+    public String createUser(String username, String password) {
         assert username != null;
         assert password != null;
+
+        Object[] args = new Object[]{username};
+
+        if(db.selectNonEmpty(validLoginQuery, args)) {
+            return "Username exists";
+        }
 
         boolean retVal = false;
         String salt = System.currentTimeMillis() + "";
         String hashedPass = hashPassword(password, salt);
         
-        Object[] args = new Object[]{username, hashedPass, salt};
+        args = new Object[]{username, hashedPass, salt};
 
         retVal = db.updateCommand(insertStmt, args);
 
-        return retVal;
+        if(retVal) {
+            return "Success";
+        } else {
+            return "Account Creation Failed";
+        }
     }
 
     @Override

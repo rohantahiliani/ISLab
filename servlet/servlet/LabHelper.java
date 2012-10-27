@@ -1,5 +1,6 @@
 package servlet;
 
+import edu.gatech.islab.chat.enums.AccountType;
 import edu.gatech.islab.chat.enums.Operation;
 
 import java.io.PrintWriter;
@@ -17,17 +18,19 @@ import javax.servlet.http.*;
 
 public class LabHelper {
 
-    private List<String> paramList;
+    private final AccountType uChat = AccountType.UCHAT;
+
     private Map<String, String[]> paramValues;
     private Set<String> acceptParams;
     private List<String> requiredParams;
+    private Cookie[] cookies;
     private PrintWriter writer;
 
     @SuppressWarnings("unchecked") 
     public LabHelper(HttpServletRequest request, PrintWriter writer) {
         acceptParams = new HashSet<String>();
-        paramList = Collections.list((Enumeration<String>)request.getParameterNames());
-        paramValues = request.getParameterMap();
+        paramValues = new HashMap<String, String[]>(request.getParameterMap());
+        cookies = request.getCookies();
         this.writer = writer;
         initAcceptParams();
     }
@@ -42,13 +45,18 @@ public class LabHelper {
         acceptParams.add("AccountType");
         acceptParams.add("SessionId");
         acceptParams.add("CaptchaId");
+        for(AccountType type: AccountType.values()) {
+            acceptParams.add(type+"SessionId");
+            acceptParams.add(type+"Username");
+        }
         acceptParams.add("warn");
     }
 
     public void initRequiredParams() {
         requiredParams = new LinkedList<String>();
-        requiredParams.add("Operation");
         requiredParams.add("AccountType");
+        requiredParams.add("Operation");
+
         String opString = getParam("Operation");
         if(opString == null) {
             return;
@@ -65,9 +73,6 @@ public class LabHelper {
                 requiredParams.add("Message");
                 requiredParams.add("Recipient");
                 break;
-            case GETFRIENDS:
-            case DISCONNECT:
-            case NULL:
             default:
                 break;
             }
@@ -76,6 +81,9 @@ public class LabHelper {
 
     public boolean validateParams() {
         initRequiredParams();
+        addCookieValues(AccountType.value(getParam("AccountType")));
+
+        Set<String> paramList = paramValues.keySet();
 
         for(String param: paramList) {
             if(!isSane(param)) {
@@ -99,16 +107,12 @@ public class LabHelper {
         return true;
     }
 
-    public boolean containsParam(String param) {
-        return paramList.contains(param);
-    }
-
     public String getParam(String param) {
-        if(!containsParam(param)) {
-            writeError("Invalid parameter");
+        if(paramValues.containsKey(param)) {
+            return paramValues.get(param)[0];
+        } else {
             return null;
         }
-        return paramValues.get(param)[0];
     }
 
     public void writeError(String error) {
@@ -124,6 +128,31 @@ public class LabHelper {
             
         }
         return true;
+    }
+
+    private void addCookieValues(AccountType accountType) {
+        if(cookies != null && accountType != null) {
+            if(accountType != uChat) {
+                for(Cookie cookie: cookies) {
+                    if(cookie.getName().equals(uChat + "SessionId")) {
+                        paramValues.put
+                            (uChat+"SessionId", new String[]{cookie.getValue()});
+                    } else if(cookie.getName().equals(uChat + "Username")) {
+                        paramValues.put
+                            (uChat + "Username", new String[]{cookie.getValue()});
+                    }
+                }
+            } 
+            for(Cookie cookie: cookies) {
+                if(cookie.getName().equals(accountType + "SessionId")) {
+                    paramValues.put
+                        ("SessionId", new String[]{cookie.getValue()});
+                } else if(cookie.getName().equals(accountType + "Username")) {
+                    paramValues.
+                        put("Username", new String[]{cookie.getValue()});
+                }
+            }
+        }
     }
 
 }

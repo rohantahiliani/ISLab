@@ -13,7 +13,7 @@ import javax.servlet.http.*;
 @SuppressWarnings("serial")
 public class InfoSecLab extends HttpServlet {
 
-    private String DOMAIN = "";
+    private String DOMAIN = "http://localhost/islab/";
 
     private Main obj;
     private LabHelper helper;
@@ -32,7 +32,7 @@ public class InfoSecLab extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, java.io.IOException {
 
-        DOMAIN = request.getHeader("referer");
+        HashMap<String, Object> params = new HashMap<String, Object>();
 
         response.addHeader("Access-Control-Allow-Origin", "*");
 	response.setContentType("text/html");
@@ -46,19 +46,25 @@ public class InfoSecLab extends HttpServlet {
 
         String username = null;
         String sessionId = null;
-        AccountType accountType = AccountType.value(helper.getParam("AccountType"));
+        AccountType accountType = AccountType.value
+            (helper.getParam("AccountType"));
         Operation operation = Operation.value(helper.getParam("Operation"));
 
+        username = helper.getParam("Username");
+        sessionId = helper.getParam("SessionId");
         if(operation == Operation.LOGIN || operation == Operation.REGISTER) {
-            username = helper.getParam("Username");
             sessionId = "";
-        } else if(request.getCookies() != null) {
-            for(Cookie cookie: request.getCookies()) {
-                if(cookie.getName().equals("SessionId")) {
-                    sessionId = cookie.getValue();
-                } else if(cookie.getName().equals("Username")) {
-                    username = cookie.getValue();
-                }
+        } 
+        if(accountType != AccountType.UCHAT) {
+            String ucUsername = AccountType.UCHAT + "Username";
+            String ucSessionId = AccountType.UCHAT + "SessionId";
+            if(helper.getParam(ucUsername) != null && 
+               helper.getParam(ucSessionId) != null) {
+                params.put(ucUsername, helper.getParam(ucUsername));
+                params.put(ucSessionId, helper.getParam(ucSessionId));
+            } else {
+                helper.writeError("UCHAT Username/SessionId missing");
+                return;
             }
         } 
 
@@ -70,13 +76,13 @@ public class InfoSecLab extends HttpServlet {
             return;
         } 
 
-        HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("Operation", operation);
         params.put("AccountType", accountType);
         params.put("Username", username);
         params.put("SessionId", sessionId);
 
         switch(operation) {
+        case REGISTER:
         case LOGIN:
             String password = helper.getParam("Password");
             if(password == null) {
@@ -99,6 +105,7 @@ public class InfoSecLab extends HttpServlet {
 
         case GETFRIENDS:
         case DISCONNECT:
+        default:
             break;
         }
 
@@ -110,10 +117,15 @@ public class InfoSecLab extends HttpServlet {
                 if(ret.length == 2 && 
                    ret[0].toString().equals("Success")) {
 
-                    response.addCookie(new Cookie("SessionId", ret[1].toString()));
-                    response.addCookie(new Cookie("Username", username));
-                    response.sendRedirect(DOMAIN + "send.html");
+                    response.addCookie
+                        (new Cookie
+                         (accountType + "SessionId", ret[1].toString()));
+                    response.addCookie
+                        (new Cookie
+                         (accountType + "Username", username));
+                    response.sendRedirect(DOMAIN + "chat.php");
                 }
+                break;
             default:
                 for(Object retObject: ret) {
                     writer.println(retObject);

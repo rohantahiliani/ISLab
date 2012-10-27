@@ -15,26 +15,31 @@ public class DBUtilities implements DB {
 
     }
 
-    public static DBUtilities getInstance() {
-        synchronized(instance) {
-            if(instance == null) {
-                instance = new DBUtilities();
-            }
+    public static synchronized DBUtilities getInstance() {
+        if(instance == null) {
+            instance = new DBUtilities();
         }
         return instance;
     }
 
     public boolean updateCommand(String query, Object[] args) {
         connect();
+        PreparedStatement insertStmt = null;
         try {
-            PreparedStatement insertStmt = this.connection.prepareStatement(query);
-            int i = 0;
+            insertStmt = this.connection.prepareStatement(query);
+            int i = 1;
             for(Object arg: args) {
                 insertStmt.setObject(i++, arg);
             }
             insertStmt.executeUpdate();
             return true;
         } catch(SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                insertStmt.close();
+            } catch(SQLException ex) {
+            }
         }
         return false;
     }
@@ -44,12 +49,13 @@ public class DBUtilities implements DB {
         ResultSet retVal = null;
         try {
             PreparedStatement selectStmt = this.connection.prepareStatement(query);
-            int i = 0;
+            int i = 1;
             for(Object arg: args) {
                 selectStmt.setObject(i++, arg);
             }
             retVal = selectStmt.executeQuery();
         } catch(SQLException ex) {
+            ex.printStackTrace();
         }
         return retVal;
     }

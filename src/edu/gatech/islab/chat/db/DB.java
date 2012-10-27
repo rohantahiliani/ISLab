@@ -7,4 +7,6 @@ public interface DB {
     public boolean updateCommand(String query, Object[] args);
 
     public ResultSet selectCommand(String query, Object[] args);
+
+    public boolean selectNonEmpty(String query, Object[] args);
 }

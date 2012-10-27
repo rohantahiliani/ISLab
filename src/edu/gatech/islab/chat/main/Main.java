@@ -24,7 +24,7 @@ public class Main {
 
         String username = (String) args.get("Username");
         Operation operation = (Operation) args.get("Operation");
-        AccountType type = (AccountType) args.get("AccountType");
+        AccountType accountType = (AccountType) args.get("AccountType");
         User user = null;
         Session session = null;
         Object[] retArray = null;
@@ -35,16 +35,22 @@ public class Main {
             return new Object[]{"Invalid account type or operation"};
         }
 
-        user = getUser(username, type, operation);
+        user = getUser(username, accountType, operation);
 
         if(user != null) {
             session = user.getSession();
-            type = user.getAccountType();
+            accountType = user.getAccountType();
         } 
 
         if(user == null || session == null || 
-           type == null || type == AccountType.NULL) {
+           accountType == null || accountType == AccountType.NULL) {
             return new Object[]{"Invalid user, session or account type"};
+        } 
+
+        if(accountType != AccountType.UCHAT) {
+            if(!validateUChatSession(args)) {
+                return new Object[]{"Invalid UChat session"};
+            }
         } 
 
         if((operation != Operation.LOGIN  && operation != Operation.REGISTER) &&
@@ -54,15 +60,41 @@ public class Main {
         }
 
         switch(operation) {
-        case LOGIN:
         case REGISTER:
-            String pass = (String)args.get("Password");
-            if(session.login(user.getLogin(), pass)) {
-                retArray = new Object[]{"Success", session.getSessionId()};
-                userMap.put(user.getLogin() + type, user);
+        case LOGIN:
+            String password = (String)args.get("Password");
+            String retMessage = "";
+            boolean opSuccess = false;
+
+            if(operation == Operation.REGISTER) {
+                if(user.getAccountType() != AccountType.UCHAT) {
+                    retArray = new Object[]{"Invalid command. Trying to hack?"};
+                } else {
+                   retMessage = ((UChatSession)session).
+                        createUser(user.getLogin(), password);
+                   if(retMessage.equals("Success")) {
+                       opSuccess = true;
+                   } else {
+                       opSuccess = false;
+                   }
+                }
             } else {
-                retArray = new Object[]{"Login Failed"};
+                opSuccess = session.login(user.getLogin(), password);
             }
+
+            if(opSuccess) {
+                retArray = new Object[]{"Success", session.getSessionId()};
+                userMap.put(user.getLogin() + accountType, user);
+            } else {
+                if(retMessage.equals("")) {
+                    retMessage = "Login Failed";
+                }
+                retArray = new Object[]{retMessage};
+            }
+            break;
+
+        case VALIDATE:
+            retArray = new Object[]{"Success"};
             break;
 
         case SENDMESSAGE:
@@ -71,8 +103,10 @@ public class Main {
                 String recipient = (String)args.get("Recipient");
                 if(message != null && recipient != null) {
                     ((XMPPSession)session).sendMessage
-                        (message, new User(recipient, recipient, type));
+                        (message, new User(recipient, recipient, accountType));
                 }
+            } else {
+                retArray = new Object[]{"Invalid command. Trying to hack?"};
             }
             break;
 
@@ -98,14 +132,14 @@ public class Main {
     }
 
     private User getUser
-        (String username, AccountType type, Operation operation) {
+        (String username, AccountType accountType, Operation operation) {
 
         User user = null;
 
-        user = userMap.get(username + type);
+        user = userMap.get(username + accountType);
         
         if(user!=null) {
-            if(user.getAccountType() != type) {
+            if(accountType == null || user.getAccountType() != accountType) {
                 user = null;
             } 
         }
@@ -113,12 +147,12 @@ public class Main {
         if(user == null && 
            (operation == Operation.LOGIN || operation == Operation.REGISTER)) {
 
-            user = new User(username, username, type);
+            user = new User(username, username, accountType);
 
             Session session = null;
             String sessionId = helper.getNewSessionId();
             
-            switch(type) {
+            switch(accountType) {
             case GOOGLE:
                 session = new GoogleSession();
                 break;
@@ -138,9 +172,27 @@ public class Main {
     }
 
     private void removeUserSessions(User user) {
-        for(AccountType type: AccountType.values()) {
-            userMap.remove(user.getLogin() + type);
+        for(AccountType accountType: AccountType.values()) {
+            userMap.remove(user.getLogin() + accountType);
         }
+    }
+
+    private boolean validateUChatSession(HashMap<String, Object> args) {
+        String ucUsername = AccountType.UCHAT + "Username";
+        String ucSessionId = AccountType.UCHAT + "SessionId";
+        HashMap validateArgs = new HashMap<String, Object>();
+        validateArgs.put("Username", args.get(ucUsername));
+        validateArgs.put("SessionId", args.get(ucSessionId));
+        validateArgs.put("Operation", Operation.VALIDATE);
+        validateArgs.put("AccountType", AccountType.UCHAT);
+        Object[] validate = this.doOperation(validateArgs);
+        if(validate != null && validate.length > 0) {
+            if(validate[0].toString().equals("Success")) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
 }
