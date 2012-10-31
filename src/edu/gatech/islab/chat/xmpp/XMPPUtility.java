@@ -12,7 +12,6 @@ import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
@@ -23,6 +22,7 @@ public abstract class XMPPUtility {
 
     private Connection connection;
     private ChatManager chatManager;
+    private XMPPMessageListener listener;
     private Map<User, Chat> chatMap;
 
     protected XMPPUtility() {
@@ -31,11 +31,13 @@ public abstract class XMPPUtility {
 
     protected XMPPUtility(String server) {
         this.connection = new XMPPConnection(server);
+        this.listener = new XMPPMessageListener();
         connect();
     }
 
     protected XMPPUtility(ConnectionConfiguration config) {
         this.connection = new XMPPConnection(config);
+        this.listener = new XMPPMessageListener();
         connect();
     }
 
@@ -50,15 +52,21 @@ public abstract class XMPPUtility {
     }
 
     private Chat getChat(User recipient) {
+        if(!this.connection.isConnected()) {
+            connect();
+        } 
+        if(!this.connection.isAuthenticated()) {
+            return null;
+        }
         if(this.chatManager == null) {
             this.chatManager = this.connection.getChatManager();
         }
-        
         if(this.chatMap.containsKey(recipient)) {
             return this.chatMap.get(recipient);
         }
         
-        Chat chat = this.chatManager.createChat(recipient.getLogin(), null);
+        Chat chat = this.chatManager.createChat
+            (recipient.getLogin(), listener);
         this.chatMap.put(recipient, chat);
         
         return chat;
@@ -86,6 +94,14 @@ public abstract class XMPPUtility {
             chat.sendMessage(message);
         } catch(XMPPException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public Map<User, List<String>> getMessages() {
+        if(this.listener != null) {
+            return this.listener.getMessages();
+        } else {
+            return new HashMap<User, List<String>>();
         }
     }
 

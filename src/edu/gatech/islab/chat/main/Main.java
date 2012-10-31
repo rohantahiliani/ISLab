@@ -104,7 +104,16 @@ public class Main {
                 if(message != null && recipient != null) {
                     ((XMPPSession)session).sendMessage
                         (message, new User(recipient, recipient, accountType));
+                    retArray = new Object[]{"Success"};
                 }
+            } else {
+                retArray = new Object[]{"Invalid command. Trying to hack?"};
+            }
+            break;
+
+        case GETMESSAGES:
+            if(session instanceof XMPPSession) {
+                retArray = new Object[]{((XMPPSession)session).getMessages()};
             } else {
                 retArray = new Object[]{"Invalid command. Trying to hack?"};
             }

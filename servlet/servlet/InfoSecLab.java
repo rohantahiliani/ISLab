@@ -104,6 +104,7 @@ public class InfoSecLab extends HttpServlet {
             break;
 
         case GETFRIENDS:
+        case GETMESSAGES:
         case DISCONNECT:
         default:
             break;

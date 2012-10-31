@@ -21,25 +21,4 @@ public class GoogleSession extends XMPPSession {
         }
         return this.session;
     }
-
-    @Override
-    public boolean login(String username, String password) {
-        return getSession().login(username, password);
-    }
-
-    @Override
-    public void sendMessage(String message, User recipient) {
-        getSession().sendMessage(message, recipient);
-    }
-
-    @Override
-    public List<User> getFriendList() {
-        return getSession().getFriendList();
-    }
-
-    @Override
-    public boolean disconnect() {
-        return getSession().disconnect();
-    }
-
 }
