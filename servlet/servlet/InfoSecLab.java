@@ -13,7 +13,7 @@ import javax.servlet.http.*;
 @SuppressWarnings("serial")
 public class InfoSecLab extends HttpServlet {
 
-    private String DOMAIN = "http://localhost/islab/";
+    private String DOMAIN = "http://islabchat.no-ip.org/islab/";
 
     private Main obj;
     private LabHelper helper;
@@ -126,7 +126,6 @@ public class InfoSecLab extends HttpServlet {
                          (accountType + "Username", username));
                     response.sendRedirect(DOMAIN + "chat.php");
                 }
-                break;
             default:
                 for(Object retObject: ret) {
                     writer.println(retObject);

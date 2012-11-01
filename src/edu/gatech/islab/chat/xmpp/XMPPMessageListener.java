@@ -22,7 +22,7 @@ public class XMPPMessageListener implements MessageListener {
     }
 
     public void processMessage(Chat chat, Message message) {
-        if(message.getType() == Type.chat) {
+        if(message.getType() == Type.chat && message.getBody() != null) {
             User user = new User
                 (chat.getParticipant(), chat.getParticipant(), AccountType.UCHAT);
             addMessage(user, message.getBody());

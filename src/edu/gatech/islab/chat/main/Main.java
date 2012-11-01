@@ -168,6 +168,9 @@ public class Main {
             case UCHAT:
                 session = new UChatSession();
                 break;
+            case JABBER:
+                session = new JabberSession();
+                break;
             default:
                 break;
             }
@@ -189,7 +192,7 @@ public class Main {
     private boolean validateUChatSession(HashMap<String, Object> args) {
         String ucUsername = AccountType.UCHAT + "Username";
         String ucSessionId = AccountType.UCHAT + "SessionId";
-        HashMap validateArgs = new HashMap<String, Object>();
+        HashMap<String, Object> validateArgs = new HashMap<String, Object>();
         validateArgs.put("Username", args.get(ucUsername));
         validateArgs.put("SessionId", args.get(ucSessionId));
         validateArgs.put("Operation", Operation.VALIDATE);

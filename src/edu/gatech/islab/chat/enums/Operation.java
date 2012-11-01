@@ -13,7 +13,11 @@ public enum Operation {
     public static Operation value(String type) {
         Operation retVal = null;
         try {
-            retVal = valueOf(type);
+            if(type != null) {
+                retVal = valueOf(type);
+            } else {
+                retVal = Operation.NULL;
+            }
         } catch (IllegalArgumentException ex) {
             retVal = Operation.NULL;
         }
