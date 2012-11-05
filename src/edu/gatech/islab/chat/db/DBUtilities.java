@@ -37,7 +37,9 @@ public class DBUtilities implements DB {
             ex.printStackTrace();
         } finally {
             try {
-                insertStmt.close();
+            	if(insertStmt != null) {
+            		insertStmt.close();
+            	}
             } catch(SQLException ex) {
             }
         }
@@ -47,8 +49,9 @@ public class DBUtilities implements DB {
     public ResultSet selectCommand(String query, Object[] args) {
         connect();
         ResultSet retVal = null;
+        PreparedStatement selectStmt = null;
         try {
-            PreparedStatement selectStmt = this.connection.prepareStatement(query);
+        	selectStmt = this.connection.prepareStatement(query);
             int i = 1;
             for(Object arg: args) {
                 selectStmt.setObject(i++, arg);
@@ -56,6 +59,13 @@ public class DBUtilities implements DB {
             retVal = selectStmt.executeQuery();
         } catch(SQLException ex) {
             ex.printStackTrace();
+        } finally {
+        	if(selectStmt != null) {
+        		try {
+        			selectStmt.close();
+        		} catch(SQLException ex) {
+        		}
+        	}
         }
         return retVal;
     }

@@ -1,18 +1,19 @@
 package edu.gatech.islab.chat.main;
 
-import edu.gatech.islab.chat.enums.*;
-import edu.gatech.islab.chat.session.*;
-import edu.gatech.islab.chat.user.User;
-import edu.gatech.islab.chat.xmpp.*;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
+
+import edu.gatech.islab.chat.enums.AccountType;
+import edu.gatech.islab.chat.enums.Operation;
+import edu.gatech.islab.chat.session.Session;
+import edu.gatech.islab.chat.session.UChatSession;
+import edu.gatech.islab.chat.session.XMPPSession;
+import edu.gatech.islab.chat.user.User;
 
 public class Main {
     
-    private final String SUCCESS = "Success";
-    private final String HACKFAIL = "Trying to hack? You have failed.";
+    private static final String SUCCESS = "Success";
+    private static final String HACKFAIL = "Trying to hack? You have failed.";
     private final String ucUsername = AccountType.UCHAT + "Username";
     private final String ucSessionId = AccountType.UCHAT + "SessionId";
 

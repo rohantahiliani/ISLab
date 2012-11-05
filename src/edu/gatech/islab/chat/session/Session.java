@@ -19,20 +19,19 @@ public abstract class Session {
 
     @Override
     public boolean equals(Object session) {
-        if(session == null) {
-            return false;
+        if(session instanceof Session){
+	        Session that = (Session) session;
+	        if((this.sessionId == null && that.sessionId != null) ||
+	           (this.sessionId != null && that.sessionId == null) ||
+	           (this.sessionType == null && that.sessionType != null) ||
+	           (this.sessionType != null && that.sessionType == null)) {
+	            return false;
+	        }
+	        
+	        return this.sessionId.equals(that.sessionId) &&
+	            this.sessionType.equals(that.sessionType);
         }
-
-        Session that = (Session) session;
-        if((this.sessionId == null && that.sessionId != null) ||
-           (this.sessionId != null && that.sessionId == null) ||
-           (this.sessionType == null && that.sessionType != null) ||
-           (this.sessionType != null && that.sessionType == null)) {
-            return false;
-        }
-        
-        return this.sessionId.equals(that.sessionId) &&
-            this.sessionType.equals(that.sessionType);
+        return false;
     }
 
     @Override

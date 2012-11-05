@@ -1,18 +1,20 @@
 package edu.gatech.islab.chat.main;
 
-import edu.gatech.islab.chat.enums.*;
-import edu.gatech.islab.chat.session.*;
-import edu.gatech.islab.chat.user.User;
-import edu.gatech.islab.chat.xmpp.*;
-
 import java.util.HashMap;
 import java.util.Random;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import edu.gatech.islab.chat.enums.AccountType;
+import edu.gatech.islab.chat.enums.Operation;
+import edu.gatech.islab.chat.session.GoogleSession;
+import edu.gatech.islab.chat.session.JabberSession;
+import edu.gatech.islab.chat.session.Session;
+import edu.gatech.islab.chat.session.UChatSession;
+import edu.gatech.islab.chat.user.User;
+
 public class MainHelper {
 
-    private final String SUCCESS = "Success";
 
     private Random random;
     private HashMap<String, User> userMap;
@@ -104,8 +106,8 @@ public class MainHelper {
 
             if(accountType == AccountType.UCHAT) {
                 for(AccountType type: AccountType.values()) {
-                    retVal = disconnectUserSession(getFromUserMap(uchatUsername, accountType)) && retVal;
-                    removeFromUserMap(uchatUsername, accountType);
+                    retVal = disconnectUserSession(getFromUserMap(uchatUsername, type)) && retVal;
+                    removeFromUserMap(uchatUsername, type);
                 }
             } else {
                 retVal = disconnectUserSession(getFromUserMap(uchatUsername, accountType));

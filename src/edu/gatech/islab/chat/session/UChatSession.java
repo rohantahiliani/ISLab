@@ -1,13 +1,12 @@
 package edu.gatech.islab.chat.session;
 
-import edu.gatech.islab.chat.db.*;
-import edu.gatech.islab.chat.user.User;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
+
+import edu.gatech.islab.chat.db.DB;
+import edu.gatech.islab.chat.db.DBUtilities;
 
 public class UChatSession extends Session {
     

@@ -49,21 +49,21 @@ public class User {
 
     @Override
     public boolean equals(Object user) {
-        if(user == null) {
-            return false;
+        if(user instanceof User) {
+	        User that = (User) user;
+	        
+	        if((this.session == null && that.session != null) ||
+	           (this.session != null && that.session == null) || 
+	           (this.session != null && that.session != null &&
+	             !this.session.equals(that.session))) {
+	            return false;
+	        } 
+	
+	        return this.accountType == that.accountType && 
+	            this.login.equals(that.login) &&
+	            this.username.equals(that.username);
         }
-        User that = (User) user;
-        
-        if((this.session == null && that.session != null) ||
-           (this.session != null && that.session == null) || 
-           (this.session != null && that.session != null &&
-             !this.session.equals(that.session))) {
-            return false;
-        } 
-
-        return this.accountType == that.accountType && 
-            this.login.equals(that.login) &&
-            this.username.equals(that.username);
+        return false;
     }
     
     @Override
