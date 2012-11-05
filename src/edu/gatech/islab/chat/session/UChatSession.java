@@ -70,6 +70,7 @@ public class UChatSession extends Session {
                 }
                 result.close();
             } catch(SQLException ex) {
+                ex.printStackTrace();
             }
         }
         return retVal;

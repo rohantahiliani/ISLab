@@ -72,6 +72,10 @@ public class MainHelper {
             }
         }
         
+        if(session != null) {
+            user.setSession(session);
+        }
+
         return session;
     }
 
@@ -86,16 +90,19 @@ public class MainHelper {
     }
 
     public boolean disconnectUserSession(User user) {
-        assert user != null;
+        if(user != null) {
 
-        boolean retVal = false;
-        Session session = user.getSession();
+            boolean retVal = false;
+            Session session = user.getSession();
 
-        if(session != null) {
-            retVal = session.disconnect();
-        } 
+            if(session != null) {
+                retVal = session.disconnect();
+            } 
 
-        return retVal;
+            return retVal;
+        } else  {
+            return true;
+        }
     }
 
     public boolean removeUserSessions(String uchatUsername, AccountType accountType) {

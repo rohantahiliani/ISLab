@@ -9,6 +9,7 @@
   <property name="serdep" location="serdep"/>
   <property name="serloc" location="servlet"/>
   <property name="dist" location="dist"/>
+  <property name="heroku" location="heroku"/>
   <!-- <property name="dist"  location="dist"/> -->
 
   <target name="init">
@@ -31,24 +32,17 @@
 
   <target name="servlet" description="Compile the Servlet" 
           depends="dist">
-    <mkdir dir="${serdep}"/>
-    <javac srcdir="${serloc}" destdir="${serdep}" debug="on" debuglevel="lines,vars,source">
-      <classpath>
-        <pathelement location="${dist}/lib/islab.jar"/>
-      </classpath>
-      <!--<compilerarg value="-Xlint"/>-->
-    </javac>
-    <copy todir="/home/rohan/Downloads/tomcat6/webapps/islab/WEB-INF/classes">
-      <fileset dir="${serdep}"/>
+    <copy todir="${heroku}/src/main/java/servlet/">
+      <fileset dir="servlet/"/>
     </copy>
-    <copy todir="/home/rohan/Downloads/tomcat6/webapps/islab/WEB-INF/lib">
-      <fileset dir="${dist}/lib"/>
+    <copy todir="${heroku}/lib/">
+      <fileset dir="${dist}/lib/"/>
       <fileset dir="${lib}"/>
     </copy>
   </target>
 
   <target name="dist" depends="compile"
-        description="generate the distribution" >
+          description="generate the distribution" >
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/lib"/>
 

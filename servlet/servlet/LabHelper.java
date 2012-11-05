@@ -12,19 +12,28 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import net.tanesha.recaptcha.ReCaptchaImpl;
+import net.tanesha.recaptcha.ReCaptchaResponse;
+
 public class LabHelper {
 
     private final AccountType uChat = AccountType.UCHAT;
+    private final String captchaKey;
+    private static final String HACKFAIL = "Trying to hack? You have failed.";
 
     private Map<String, String[]> paramValues;
     private Set<String> acceptParams;
     private List<String> requiredParams;
-    private Cookie[] cookies;
+    private Pattern[] patterns;
+
     private PrintWriter writer;
+    private Cookie[] cookies;
 
     @SuppressWarnings("unchecked") 
     public LabHelper(HttpServletRequest request, PrintWriter writer) {
@@ -33,6 +42,8 @@ public class LabHelper {
         cookies = request.getCookies();
         this.writer = writer;
         initAcceptParams();
+        initPatterns();
+        captchaKey = System.getenv("CAPTCHA_PRIVATE_KEY");
     }
 
     public void initAcceptParams() {
@@ -45,6 +56,8 @@ public class LabHelper {
         acceptParams.add("AccountType");
         acceptParams.add("SessionId");
         acceptParams.add("CaptchaId");
+        acceptParams.add("recaptcha_challenge_field");
+        acceptParams.add("recaptcha_response_field");
         for(AccountType type: AccountType.values()) {
             acceptParams.add(type+"SessionId");
             acceptParams.add(type+"Username");
@@ -66,6 +79,9 @@ public class LabHelper {
             switch(operation) {
             case LOGIN:
             case REGISTER:
+                if(operation == Operation.REGISTER) {
+                    requiredParams.add("CaptchaId");
+                }
                 requiredParams.add("Username");
                 requiredParams.add("Password");
                 break;
@@ -79,6 +95,22 @@ public class LabHelper {
         }
     }
 
+    public void initPatterns() {
+        String[] regexes = new String[] {
+            ".*?([0-9]).*",
+            ".*?([a-z]).*",
+            ".*?([A-Z]).*",
+            ".*?([\\._\\-\\$#@%]).*",
+            ".*?[^0-9a-zA-Z\\._\\-\\$#@%].*"
+        };
+        patterns = new Pattern[regexes.length];
+
+        int i = 0;
+        for(String regex: regexes) {
+            patterns[i++] = Pattern.compile(regex);
+        }
+    }
+
     public boolean validateParams() {
         initRequiredParams();
         addCookieValues(AccountType.value(getParam("AccountType")));
@@ -87,24 +119,44 @@ public class LabHelper {
 
         for(String param: paramList) {
             if(!isSane(param)) {
-                writer.println("Invalid parameter value: " + param);
+                writeError();
                 return false;
             }
         }
 
         for(String parameter: paramList) {
             if(!acceptParams.contains(parameter)) {
-                writer.println("Invalid parameter: " + parameter);
+                writeError();
                 return false;
             }
         }
 
         if(!paramList.containsAll(requiredParams)) {
-            writer.println("Required parameter missing:" + paramList);
+            writeError();
             return false;
         }
 
         return true;
+    }
+
+    public boolean invalidPassword(String password) {
+        boolean retVal = false;
+        Matcher matcher = null;
+
+        for(int i = 0; i < patterns.length - 1; i++) {
+            matcher = patterns[i].matcher(password);
+            if(!matcher.matches()) {
+                retVal = true;
+                break;
+            }
+        }
+        if(!retVal) {
+            matcher = patterns[patterns.length - 1].matcher(password);
+            if(matcher.matches()) {
+                retVal = true;
+            }
+        }
+        return retVal;
     }
 
     public String getParam(String param) {
@@ -115,8 +167,8 @@ public class LabHelper {
         }
     }
 
-    public void writeError(String error) {
-        writer.println(error);
+    public void writeError() {
+        writer.println(HACKFAIL);
     }
 
     public boolean isSane(String text) {
@@ -130,7 +182,7 @@ public class LabHelper {
         return true;
     }
 
-    private void addCookieValues(AccountType accountType) {
+    public void addCookieValues(AccountType accountType) {
         if(cookies != null && accountType != null) {
             if(accountType != uChat) {
                 for(Cookie cookie: cookies) {
@@ -153,6 +205,45 @@ public class LabHelper {
                 }
             }
         }
+    }
+
+    public void deleteCookie(String name, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, "");
+        cookie.setDomain(".herokuapp.com");
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+    
+    public boolean validCaptcha() {
+        boolean retVal = false;
+
+        String captchaId = getParam("CaptchaId");
+        if(captchaId != null &&
+           captchaId.equals(captchaKey)) {
+            retVal = true;
+        }
+
+        if(!retVal) {
+            writeError();
+        }
+        return retVal;
+    }
+
+    public boolean validateCaptcha(String ipaddr) {
+        String remoteAddr = ipaddr;
+        ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
+        reCaptcha.setPrivateKey(captchaKey);
+
+        String challenge = getParam("recaptcha_challenge_field");
+        String uresponse = getParam("recaptcha_response_field");
+        if(ipaddr == null || challenge == null || uresponse == null) {
+            writeError();
+            return false;
+        }
+        ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, uresponse);
+        writer.println(reCaptchaResponse.toString() + " " + reCaptchaResponse.isValid());
+        return reCaptchaResponse.isValid();
     }
 
 }

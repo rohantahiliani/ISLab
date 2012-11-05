@@ -76,6 +76,10 @@ public abstract class XMPPUtility {
         if(!this.connection.isConnected()) {
             connect();
         } 
+        if(this.connection.isAuthenticated()) {
+            disconnect();
+            return false;
+        }
 
         try {
             this.connection.login(user, password);

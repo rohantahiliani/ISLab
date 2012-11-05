@@ -1,5 +1,7 @@
 package edu.gatech.islab.chat.db;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -26,19 +28,21 @@ public class DBUtilities implements DB {
         connect();
         PreparedStatement insertStmt = null;
         try {
-            insertStmt = this.connection.prepareStatement(query);
-            int i = 1;
-            for(Object arg: args) {
-                insertStmt.setObject(i++, arg);
+            if(this.connection != null) {
+                insertStmt = this.connection.prepareStatement(query);
+                int i = 1;
+                for(Object arg: args) {
+                    insertStmt.setObject(i++, arg);
+                }
+                insertStmt.executeUpdate();
+                return true;
             }
-            insertStmt.executeUpdate();
-            return true;
         } catch(SQLException ex) {
             ex.printStackTrace();
         } finally {
             try {
             	if(insertStmt != null) {
-            		insertStmt.close();
+                    insertStmt.close();
             	}
             } catch(SQLException ex) {
             }
@@ -51,22 +55,17 @@ public class DBUtilities implements DB {
         ResultSet retVal = null;
         PreparedStatement selectStmt = null;
         try {
-        	selectStmt = this.connection.prepareStatement(query);
-            int i = 1;
-            for(Object arg: args) {
-                selectStmt.setObject(i++, arg);
+            if(this.connection != null) {
+                selectStmt = this.connection.prepareStatement(query);
+                int i = 1;
+                for(Object arg: args) {
+                    selectStmt.setObject(i++, arg);
+                }
+                retVal = selectStmt.executeQuery();
             }
-            retVal = selectStmt.executeQuery();
         } catch(SQLException ex) {
             ex.printStackTrace();
-        } finally {
-        	if(selectStmt != null) {
-        		try {
-        			selectStmt.close();
-        		} catch(SQLException ex) {
-        		}
-        	}
-        }
+        } 
         return retVal;
     }
 
@@ -86,14 +85,18 @@ public class DBUtilities implements DB {
     private void connect() {
         try {
             if(this.connection == null || this.connection.isClosed()) {
-                Class.forName("com.mysql.jdbc.Driver");
+                URI dbUri = new URI(System.getenv("CLEARDB_DATABASE_URL"));
+
+                String username = dbUri.getUserInfo().split(":")[0];
+                String password = dbUri.getUserInfo().split(":")[1];
+                String dbUrl = "jdbc:mysql://us-cdbr-east-02.cleardb.com/heroku_1b1fd0a7eae634e?autoReconnectForPools=true";
                 this.connection = DriverManager.getConnection
-                    ("jdbc:mysql://localhost:3306/islab", "tomcat6", "");
+                    (dbUrl, username, password);
             }
-        } catch(ClassNotFoundException cex) {
-            cex.printStackTrace();
         } catch(SQLException sex) {
             sex.printStackTrace();
+        } catch(URISyntaxException uex) {
+            uex.printStackTrace();
         }
     }
 

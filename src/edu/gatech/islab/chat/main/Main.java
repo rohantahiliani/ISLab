@@ -96,6 +96,7 @@ public class Main {
                 retArray = new Object[]{SUCCESS, session.getSessionId()};
                 helper.addToUserMap(uchatUsername, accountType, user);
             } else {
+                helper.removeFromUserMap(uchatUsername, accountType);
                 retArray = new Object[]{retMessage};
             }
             break;
@@ -111,7 +112,7 @@ public class Main {
                 if(message != null && recipient != null) {
                     ((XMPPSession)session).sendMessage
                         (message, new User(recipient, recipient, accountType));
-                    retArray = new Object[]{SUCCESS};
+                    retArray = new Object[]{message};
                 }
             } else {
                 retArray = new Object[]{HACKFAIL};
