@@ -41,12 +41,12 @@ public class Main {
            accountType == AccountType.NULL ||
            username == null) {
 
-            return new Object[]{"Invalid operation, account type or username\n" + HACKFAIL};
+            return new Object[]{HACKFAIL};
         }
 
         if(accountType != AccountType.UCHAT) {
             if(!validateUChatSession(args)) {
-                return new Object[]{"Invalid UChat session\n" + HACKFAIL};
+                return new Object[]{HACKFAIL};
             } 
         } else {
             uchatUsername = username;
@@ -59,13 +59,13 @@ public class Main {
         } 
 
         if(user == null || session == null) {
-            return new Object[]{"Invalid user or session\n" + HACKFAIL};
+            return new Object[]{HACKFAIL};
         } 
 
         if((operation != Operation.LOGIN  && operation != Operation.REGISTER) &&
            (!session.getSessionId().equals(args.get("SessionId")))) {
             
-            return new Object[]{"Invalid session"};
+            return new Object[]{HACKFAIL};
         }
 
         switch(operation) {
