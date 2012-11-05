@@ -75,9 +75,7 @@ public abstract class XMPPUtility {
     public boolean login(String user, String password) {
         if(!this.connection.isConnected()) {
             connect();
-        } else if(this.connection.isAuthenticated()) {
-            return true;
-        }
+        } 
 
         try {
             this.connection.login(user, password);

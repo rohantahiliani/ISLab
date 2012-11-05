@@ -35,7 +35,7 @@ public class UChatSession extends Session {
 
         Object[] args = new Object[]{username};
 
-        if(db.selectNonEmpty(validLoginQuery, args)) {
+        if(db.selectNonEmpty(userExistsQuery, args)) {
             return "Username exists";
         }
 

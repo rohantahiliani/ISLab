@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 public class Main {
     
+    private final String SUCCESS = "Success";
+
     private HashMap<String, User> userMap;
 
     private MainHelper helper;
@@ -30,21 +32,22 @@ public class Main {
         Object[] retArray = null;
 
         if(operation == null || 
-           operation == Operation.NULL) {
+           operation == Operation.NULL ||
+           accountType == null || 
+           accountType == AccountType.NULL ||
+           username == null) {
 
-            return new Object[]{"Invalid account type or operation"};
+            return new Object[]{"Invalid operation, account type or username"};
         }
 
         user = getUser(username, accountType, operation);
 
         if(user != null) {
-            session = user.getSession();
-            accountType = user.getAccountType();
+            session = getSession(user, accountType);
         } 
 
-        if(user == null || session == null || 
-           accountType == null || accountType == AccountType.NULL) {
-            return new Object[]{"Invalid user, session or account type"};
+        if(user == null || session == null) {
+            return new Object[]{"Invalid user or session"};
         } 
 
         if(accountType != AccountType.UCHAT) {
@@ -54,7 +57,7 @@ public class Main {
         } 
 
         if((operation != Operation.LOGIN  && operation != Operation.REGISTER) &&
-           !session.getSessionId().equals(args.get("SessionId"))) {
+           (!session.getSessionId().equals(args.get("SessionId")))) {
             
             return new Object[]{"Invalid session"};
         }
@@ -63,7 +66,7 @@ public class Main {
         case REGISTER:
         case LOGIN:
             String password = (String)args.get("Password");
-            String retMessage = "";
+            String retMessage = "Login Failed";
             boolean opSuccess = false;
 
             if(operation == Operation.REGISTER) {
@@ -72,7 +75,7 @@ public class Main {
                 } else {
                    retMessage = ((UChatSession)session).
                         createUser(user.getLogin(), password);
-                   if(retMessage.equals("Success")) {
+                   if(retMessage.equals(SUCCESS)) {
                        opSuccess = true;
                    } else {
                        opSuccess = false;
@@ -83,18 +86,16 @@ public class Main {
             }
 
             if(opSuccess) {
-                retArray = new Object[]{"Success", session.getSessionId()};
+                setSessionId(session);
+                retArray = new Object[]{SUCCESS, session.getSessionId()};
                 userMap.put(user.getLogin() + accountType, user);
             } else {
-                if(retMessage.equals("")) {
-                    retMessage = "Login Failed";
-                }
                 retArray = new Object[]{retMessage};
             }
             break;
 
         case VALIDATE:
-            retArray = new Object[]{"Success"};
+            retArray = new Object[]{SUCCESS};
             break;
 
         case SENDMESSAGE:
@@ -104,7 +105,7 @@ public class Main {
                 if(message != null && recipient != null) {
                     ((XMPPSession)session).sendMessage
                         (message, new User(recipient, recipient, accountType));
-                    retArray = new Object[]{"Success"};
+                    retArray = new Object[]{SUCCESS};
                 }
             } else {
                 retArray = new Object[]{"Invalid command. Trying to hack?"};
@@ -128,11 +129,11 @@ public class Main {
 
         case DISCONNECT:
             if(!session.disconnect()) {
-                retArray = new Object[]{"Success"};
+                retArray = new Object[]{SUCCESS};
             } else {
                 retArray = new Object[]{"Failed to Disconnect"};
             }
-            removeUserSessions(user);
+            removeUserSessions(user, accountType);
             break;
         default:
             break;
@@ -143,23 +144,29 @@ public class Main {
     private User getUser
         (String username, AccountType accountType, Operation operation) {
 
+        assert username ==  null;
         User user = null;
 
         user = userMap.get(username + accountType);
         
-        if(user!=null) {
-            if(accountType == null || user.getAccountType() != accountType) {
-                user = null;
-            } 
-        }
-
         if(user == null && 
            (operation == Operation.LOGIN || operation == Operation.REGISTER)) {
 
             user = new User(username, username, accountType);
+        }
 
-            Session session = null;
-            String sessionId = helper.getNewSessionId();
+        return user;
+    }
+
+    private Session getSession(User user, AccountType accountType) {
+        if(user == null) {
+            return null;
+        }
+        Session session = null;
+
+        session = user.getSession();
+
+        if(session == null) {
             
             switch(accountType) {
             case GOOGLE:
@@ -174,18 +181,29 @@ public class Main {
             default:
                 break;
             }
-            if(session != null) {
-                session.setSessionId(sessionId);
-                user.setSession(session);
-            }
         }
-
-        return user;
+        
+        return session;
     }
 
-    private void removeUserSessions(User user) {
-        for(AccountType accountType: AccountType.values()) {
-            userMap.remove(user.getLogin() + accountType);
+    private void setSessionId(Session session) {
+        if(session != null) {
+            String sessionId = helper.getNewSessionId();
+            session.setSessionId(sessionId);
+        }
+    }
+
+    private void removeUserSessions(User user, AccountType accountType) {
+        if(user != null &&
+           accountType != null) {
+
+            if(accountType == AccountType.UCHAT) {
+                for(AccountType type: AccountType.values()) {
+                    userMap.remove(user.getLogin() + accountType);
+                }
+            } else {
+                userMap.remove(user.getLogin() + accountType);
+            }
         }
     }
 
@@ -199,7 +217,7 @@ public class Main {
         validateArgs.put("AccountType", AccountType.UCHAT);
         Object[] validate = this.doOperation(validateArgs);
         if(validate != null && validate.length > 0) {
-            if(validate[0].toString().equals("Success")) {
+            if(validate[0].toString().equals(SUCCESS)) {
                 return true;
             }
         }
