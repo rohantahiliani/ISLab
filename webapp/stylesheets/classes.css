@@ -1,0 +1,125 @@
+.header {
+  background-color: #D82;
+  height: 35px;
+  text-align: center;
+}
+
+.formbox, .clientlogin {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  padding: 20px;
+  background-color: #688;
+  display: inline-block;
+  text-align: left;
+}
+
+.content {
+  text-align: center;  
+}
+
+.warn {
+  color: #F93;
+}
+
+.contactbar {
+  text-align: left;
+  padding: 20px; 
+  float: left;
+  position: relative;
+  left: 0;
+  top: 0;
+  width: 15%;
+  height: 80%;
+  overflow: auto;
+}
+
+.chatcontainer {
+  float: left;
+  position: absolute;
+  left:20%;
+  right:0;
+  bottom: 100px;
+  top: 50px;
+}
+
+.chatbox {
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+  background-color: #888;
+  color: blue;
+  width: 250px;
+  height: 300px;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chatform {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.chatcontent {
+  height: 70%;
+  right: 5%;
+  left: 5%;
+  top: 15%;
+  overflow: auto;
+  position: absolute;
+}
+
+.table-bottom {
+  margin-top: 0; 
+  padding-bottom: 10px; 
+  border-radius: 0 0 20px 20px;
+}
+
+.clientlogin {
+  display: none;
+  left: 10px;
+  top: 10px;
+}
+
+.clcontainer, .clcontainer > div {
+  float: none;
+  position: relative;
+}
+
+.clcontainer:hover > div {
+  display: inline-block;
+}
+
+.footer {
+  display: block;
+  padding: 15px 15px;
+  background-color: #D82;
+  border-radius: 20px 20px 0 0;
+  color: #000;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  bottom:0;
+  position: absolute;
+  text-align:center;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+}
+
+.divider{
+  position:absolute;
+  top:0;
+  bottom:0;
+  border-left:1px solid black;
+  z-index: -1;
+}
+
+.hidden {
+  display: none;
+}

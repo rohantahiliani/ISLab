@@ -1,0 +1,150 @@
+* {
+  margin: 0;
+}
+
+#html, body {
+  background-color:#FFF;
+  height: 100%;
+}
+
+label, input {
+  display: block;
+  padding-right: 5px;
+}
+
+a:link {
+  font-family: 'Arial';
+  text-decoration: none;
+  color: #001EFF;
+  font-size: 12pt;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #6600FF;
+  font-size: 12pt;
+}
+
+a:visited {
+  font-family: 'Arial';
+  text-decoration: none;
+  color: #4444FF;
+  font-size: 12pt;
+}
+
+a.info {
+  position: relative;
+}
+
+a.info:hover {
+  color: #000;
+  font-size: 13pt;
+}
+
+a.info span {
+  display: none;
+  z-index: 25;
+  position: absolute;
+  top: 1em;
+  left: 1em;
+}
+
+a.info:hover span {
+  background-color: #F5F2FF;
+  border: 1px solid #000022;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #CCCCCC inset;
+  display: block;
+  width: 20em;
+  color: #001EFF;
+  padding: 5px;
+  text-align: center;
+}
+a.menutitle {
+  color: #337;  
+  font-size: 13pt;
+  font-weight: bold;
+}
+
+a.menulink:link, a.menulink:hover, a.menulink:visited {
+  color: #44F;
+}
+
+div {
+  font-family: 'Arial';
+  font-size: 13pt;
+  line-height:150%;
+}
+
+li {
+  font-family: 'Arial';
+  font-size: 13pt;
+  line-height:150%;
+}
+
+h1, h1 a:link, h1 a:visited {
+  font-weight: 900;
+  font-size:22px;
+  color: #000;
+  padding: 4px 0 4px;
+  -webkit-transition: text-shadow 0.2s linear;
+  -moz-transition: text-shadow 0.2s linear;
+  -ms-transition: text-shadow 0.2s linear;
+  -o-transition: text-shadow 0.2s linear;
+  transition: text-shadow 0.2s linear;
+  text-shadow: 0 0 3px #229;
+}
+
+h2 {
+  font-weight:bold;
+  font-size:22px;
+  color:#2222AA;
+  padding-bottom: 3;
+}
+
+h3 {
+  font-weight:bold;
+  font-size:18px;
+  color:#222299;
+  padding-bottom: 0;
+  text-align: center;
+}
+
+hr {
+  margin: 10px 0px;
+}
+
+img {
+  border: 0;
+}
+
+table,th, td {
+  border: 1px solid #33A;
+}
+
+table {
+  background-color: #DDD;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+input {
+  float: right;
+}
+
+label {
+  float: left;
+}
+
+input[type='submit'], input[type='button'] {
+  text-align: center;
+  background-color: #FFF;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 14px;
+  padding: 2px;
+  margin-top: 5px;
+}
