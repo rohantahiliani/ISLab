@@ -34,10 +34,11 @@
       <div class="content">
         <div class="formbox" id="logindiv">
           <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-                name="loginform" id="loginform">
-            <label for="Username">Username: </label>
+                name="loginform" id="loginform" autocomplete="off">
+            <label for="Username">Username:<img src="" id="UsernameStatus" /></label>
             <input type="text" name="Username" id="Username" /><br/>
-            <label for="Password">Password: </label>
+            
+            <label for="Password">Password:<img src="" id="PasswordStatus" /></label>
             <input type="password" name="Password" id="Password" /><br/>
             <input type="hidden" name="Operation" value="LOGIN"/>
             <input type="hidden" name="AccountType" value="UCHAT"/>
@@ -47,7 +48,6 @@
           <form method="GET" action="register.php">
             <input type="submit" value="Register" />
           </form>
-          <label id="Warn" class="warn" name="Warn"></label>
         </div>
       </div>
 

@@ -11,6 +11,10 @@
 require_once('functions.php');
 redirectTohttps();
 
+   if(isset($_COOKIE['FailedRequests']) && intval($_COOKIE['FailedRequests']) > 2) {
+        header('Location: solvecaptcha.php');
+   }
+
 $retVal='';
 $friendList = array();
 
@@ -35,7 +39,7 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
     } 
 
 } else {
-   die("Don't try to hack my system :(");
+   die("Don't try to hack my system");
 }
 ?>
 <html>
@@ -56,11 +60,12 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
 
       <div class="content">
         <div class="contactbar" name="contactbar">
+          <div id="UChatUsername"></div>
           Contacts <hr/>
           <?php
              if(isset($friendList)) {
               foreach($friendList as $key => $value) {
-                  echo "<small>".$key."</small><hr/>";
+                  echo "<small>".$key."<div id='".$key."Username'></div></small><hr/>";
 
                   foreach($value as $friend) {
           ?>
@@ -84,68 +89,15 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
         <div style="valign: top">
             LOGIN
         </div>
-        <span class="clcontainer">
-            <img src="images/gtalk.png" alt="Gtalk" class="logo" /> 
-            <?php if(!isset($_COOKIE['GOOGLEUsername']) || !isset($_COOKIE['GOOGLESessionId'])) { ?>
-            <div class="formbox clientlogin" id="GTalkLoginDiv" >
-              <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-                    name="loginform" id="loginform">
-                <label for="Username">Username: </label>
-                <input type="text" name="Username" id="User" /><br/>
-                <label for="Password">Password: </label>
-                <input type="password" name="Password" id="Password" /><br/>
-                <input type="hidden" name="Operation" value="LOGIN"/>
-                <input type="hidden" name="AccountType" value="GOOGLE"/>
-                <input type="submit" value="Chat on Gtalk!" />
-              </form>
-            </div>
-            <?php } else { ?>
-            <div class="formbox clientlogin" id="GTalkLogoutDiv" >
-              <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-                    name="logoutform" id="logoutform">
-                <input type="hidden" name="Operation" value="DISCONNECT"/>
-                <input type="hidden" name="AccountType" value="GOOGLE"/>
-                <input type="submit" value="Logout from GTalk" />
-              </form>
-            </div>
-            <?php } ?>
+        <span>
+            <img src="images/gtalk.png" alt="Gtalk" class="logo" onclick="showPopup('GTalkDiv');" /> 
         </span>
-        <span class="clcontainer">
-          <img src="images/jabber.png" alt="Jabber" class="logo" /> 
-          <?php if(!isset($_COOKIE['JABBERUsername']) && !isset($_COOKIE['JABBERSessionId'])) { ?>
-          <div class="formbox clientlogin" id="JabberLoginDiv">
-            <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-                  name="loginform" id="loginform">
-              <label for="Username">Username: </label>
-              <input type="text" name="Username" id="User" /><br/>
-              <label for="Password">Password: </label>
-              <input type="password" name="Password" id="Password" /><br/>
-              <input type="hidden" name="Operation" value="LOGIN"/>
-              <input type="hidden" name="AccountType" value="JABBER"/>
-              <input type="submit" value="Chat on Jabber!" />
-            </form>
-          </div>
-          <?php } else { ?>
-          <div class="formbox clientlogin" id="JabberLogoutDiv">
-            <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-                  name="logoutform" id="logoutform">
-              <input type="hidden" name="Operation" value="DISCONNECT"/>
-              <input type="hidden" name="AccountType" value="JABBER"/>
-              <input type="submit" value="Logout from Jabber" />
-            </form>
-          </div>
-          <?php } ?>
+        <span>
+          <img src="images/jabber.png" alt="Jabber" class="logo" onclick="showPopup('JabberDiv');"/> 
         </span>
-        <?php if(isset($_COOKIE['UCHATUsername']) && isset($_COOKIE['UCHATSessionId'])) { ?>
-        <div class="formbox" id="UChatLogoutDiv">
-          <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-                name="logoutform" id="logoutform">
-            <input type="hidden" name="Operation" value="DISCONNECT"/>
-            <input type="hidden" name="AccountType" value="UCHAT"/>
-            <input type="submit" value="Logout from UXChat" />
-          </form>
-        </div>
-        <?php } ?>
+        <span>
+          <img src="images/uchat.png" alt="UChat" class="logo" onclick="showPopup('UChatDiv');"/> 
+        </span>
       </div>
     </div>
 
@@ -154,6 +106,75 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
     <script src="js/jquery/jquery.form.js"></script>
     <script src="js/jquery/jquery-ui.js"></script>
     <script src="js/functions.js"></script>
+
+    <?php if(!isset($_COOKIE['GOOGLEUsername']) || !isset($_COOKIE['GOOGLESessionId'])) { ?>
+    <div class="formbox clientlogin popup" id="GTalkDiv" >
+      <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
+            name="loginform" id="loginform">
+        <label for="Username">Username: </label>
+        <input type="text" name="Username" id="User" /><br/>
+        <label for="Password">Password: </label>
+        <input type="password" name="Password" id="Password" /><br/>
+        <input type="hidden" name="Operation" value="LOGIN"/>
+        <input type="hidden" name="AccountType" value="GOOGLE"/>
+        <input type="submit" value="Chat on Gtalk!" />
+      </form>
+    </div>
+    <?php } else { ?>
+    <div class="formbox clientlogin popup" id="GTalkDiv" >
+      <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
+            name="logoutform" id="logoutform">
+        <input type="hidden" name="Operation" value="DISCONNECT"/>
+        <input type="hidden" name="AccountType" value="GOOGLE"/>
+        <input type="submit" value="Logout from GTalk" />
+      </form>
+    </div>
+    <script>
+      $("#GOOGLEUsername").text($.cookie("GOOGLEUsername"));
+    </script>
+    <?php } ?>
+
+    <?php if(!isset($_COOKIE['JABBERUsername']) && !isset($_COOKIE['JABBERSessionId'])) { ?>
+    <div class="formbox clientlogin popup" id="JabberDiv">
+      <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
+            name="loginform" id="loginform">
+        <label for="Username">Username: </label>
+        <input type="text" name="Username" id="User" /><br/>
+        <label for="Password">Password: </label>
+        <input type="password" name="Password" id="Password" /><br/>
+        <input type="hidden" name="Operation" value="LOGIN"/>
+        <input type="hidden" name="AccountType" value="JABBER"/>
+        <input type="submit" value="Chat on Jabber!" />
+      </form>
+    </div>
+    <?php } else { ?>
+    <div class="formbox clientlogin popup" id="JabberDiv">
+      <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
+            name="logoutform" id="logoutform">
+        <input type="hidden" name="Operation" value="DISCONNECT"/>
+        <input type="hidden" name="AccountType" value="JABBER"/>
+        <input type="submit" value="Logout from Jabber" />
+      </form>
+    </div>
+    <script>
+      $("#JABBERUsername").text($.cookie("JABBERUsername"));
+    </script>
+    <?php } ?>
+
+    <?php if(isset($_COOKIE['UCHATUsername']) && isset($_COOKIE['UCHATSessionId'])) { ?>
+    <div class="formbox clientlogin popup" id="UChatDiv">
+      <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
+            name="logoutform" id="logoutform" >
+        <input type="hidden" name="Operation" value="DISCONNECT"/>
+        <input type="hidden" name="AccountType" value="UCHAT"/>
+        <input type="submit" value="Logout from UXChat" />
+      </form>
+    </div>
+    <script>
+      $("#UChatUsername").text($.cookie("UCHATUsername"));
+    </script>
+    <?php } ?>
+
   </body>
 
 </html>

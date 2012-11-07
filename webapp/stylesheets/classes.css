@@ -4,14 +4,23 @@
   text-align: center;
 }
 
-.formbox, .clientlogin {
+.formbox, .clientlogin, .infobox {
   border-style: solid;
   border-width: 1px;
   border-radius: 5px;
-  padding: 20px;
+  padding: 40px;
+  margin: 10px;
   background-color: #688;
   display: inline-block;
   text-align: left;
+}
+
+.infobox {
+  display: inline-block;
+  color: #90F;
+  background-color: #6D4;
+  width: 600px;
+  padding: 5px;
 }
 
 .content {
@@ -78,24 +87,9 @@
   border-radius: 0 0 20px 20px;
 }
 
-.clientlogin {
-  display: none;
-  left: 10px;
-  top: 10px;
-}
-
-.clcontainer, .clcontainer > div {
-  float: none;
-  position: relative;
-}
-
-.clcontainer:hover > div {
-  display: inline-block;
-}
-
 .footer {
   display: block;
-  padding: 15px 15px;
+  padding: 15px;
   background-color: #D82;
   border-radius: 20px 20px 0 0;
   color: #000;
@@ -120,6 +114,15 @@
   z-index: -1;
 }
 
-.hidden {
-  display: none;
+.popup {
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin:-200px 0 0 -150px;
+  display:none;
+}
+
+#UsernameStatus, #PasswordStatus {
+  width: 10px;
+  height: 10px;
 }

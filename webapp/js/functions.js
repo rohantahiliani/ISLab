@@ -7,8 +7,43 @@ $(function() {
             setInterval(function() { getMessages('JABBER'); }, 2000);
         }
     }
+    $("#Username").keyup(function() {
+        verifyUsername();
+    });
+    $("#Password").keyup(function() {
+        verifyPassword();
+    });
+    $("#Username").change(function() {
+        verifyUsername();
+    });
+    $("#Password").change(function() {
+        verifyPassword();
+    });
 });
 
+function verifyUsername() {
+    var username = $("#Username").val();
+    if(username.length > 5 &&
+       username.length < 17 &&
+       username.match(/^[a-zA-Z]([a-zA-Z0-9]+)$/)) {
+        $("#UsernameStatus").attr("src", "images/green.png");
+    } else {
+        $("#UsernameStatus").attr("src", "images/red.png");
+    }
+}
+
+function verifyPassword() {
+    var password = $("#Password").val();
+    if(password.match(/[a-z]/) &&
+       password.match(/[A-Z]/) &&
+       password.match(/[0-9]/) &&
+       password.match(/[\._\-\$#@%]/) &&
+       !password.match(/[^0-9a-zA-Z\\._\\-\\$#@%]/)) {
+        $("#PasswordStatus").attr("src", "images/green.png");
+    } else {
+        $("#PasswordStatus").attr("src", "images/red.png");
+    }
+}
 
 function openChat(span) {
     var user = $(span).attr('friend');
@@ -80,4 +115,17 @@ function getMessages(type) {
                   }
               }
           });
+}
+
+function showPopup(name) {
+    var show = true;
+    if($(".popup:visible").attr('id') == name) {
+        show = false;
+    }
+
+    $(".popup").hide();
+    
+    if(show) {
+        $("#" + name).show();
+    }
 }

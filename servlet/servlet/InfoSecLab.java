@@ -125,11 +125,9 @@ public class InfoSecLab extends HttpServlet {
                 return;
             }
             if(accountType == AccountType.UCHAT) {
-                if(username.length() > 16 || 
-                   username.length() < 6 ||
-                   password.length() > 20 ||
-                   password.length() < 6 ||
+                if(helper.invalidUsername(username) ||
                    helper.invalidPassword(password)) {
+                    writer.println("Invalid username or password.");
                     helper.writeError();
                     return;
                 }
@@ -195,7 +193,11 @@ public class InfoSecLab extends HttpServlet {
                     if(fails + 1 > 2) {
                         response.sendRedirect(DOMAIN + "solvecaptcha.php");
                     } else {
-                        response.sendRedirect(DOMAIN);
+                        if(accountType == AccountType.UCHAT) {
+                            response.sendRedirect(DOMAIN);
+                        } else {
+                            response.sendRedirect(DOMAIN + "chat.php");
+                        }
                     }
                 }
                 break;

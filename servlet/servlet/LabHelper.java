@@ -139,17 +139,32 @@ public class LabHelper {
         return true;
     }
 
+    public boolean invalidUsername(String username) {
+        if(username == null) {
+            return true;
+        }
+        return username.length() > 16 ||
+            username.length() < 6 ||
+            !Pattern.matches("[a-zA-Z]([a-zA-Z0-9]+)", username);
+    }
+
     public boolean invalidPassword(String password) {
         boolean retVal = false;
         Matcher matcher = null;
 
-        for(int i = 0; i < patterns.length - 1; i++) {
+        if(password.length() > 20 ||
+           password.length() < 6) {
+            retVal = true;
+        }
+
+
+        for(int i = 0; !retVal && i < patterns.length - 1; i++) {
             matcher = patterns[i].matcher(password);
             if(!matcher.matches()) {
                 retVal = true;
-                break;
             }
         }
+
         if(!retVal) {
             matcher = patterns[patterns.length - 1].matcher(password);
             if(matcher.matches()) {
