@@ -110,7 +110,7 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
     <?php if(!isset($_COOKIE['GOOGLEUsername']) || !isset($_COOKIE['GOOGLESessionId'])) { ?>
     <div class="formbox clientlogin popup" id="GTalkDiv" >
       <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-            name="loginform" id="loginform">
+            name="loginform" id="loginform" autocomplete="off">
         <label for="Username">Username: </label>
         <input type="text" name="Username" id="User" /><br/>
         <label for="Password">Password: </label>
@@ -137,7 +137,7 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
     <?php if(!isset($_COOKIE['JABBERUsername']) && !isset($_COOKIE['JABBERSessionId'])) { ?>
     <div class="formbox clientlogin popup" id="JabberDiv">
       <form method="POST" action="https://cryptic-plateau-9733.herokuapp.com/islab/InfoSecLab" 
-            name="loginform" id="loginform">
+            name="loginform" id="loginform" autocomplete="off">
         <label for="Username">Username: </label>
         <input type="text" name="Username" id="User" /><br/>
         <label for="Password">Password: </label>
