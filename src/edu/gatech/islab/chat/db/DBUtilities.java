@@ -28,7 +28,36 @@ public class DBUtilities implements DB {
         return instance;
     }
 
-    public boolean updateCommand(String query, Object[] args, boolean forceUpdate) {
+    public boolean updateCommand(String query, Object[] args) {
+        connect();
+        boolean retVal = false;
+        PreparedStatement updateStmt = null;
+        try {
+            if(this.connection != null) {
+                updateStmt = this.connection.prepareStatement(query);
+                int i = 1;
+                for(Object arg: args) {
+                    updateStmt.setObject(i++, arg);
+                }
+                updateStmt.executeUpdate();
+                commit();
+                retVal = true;
+            }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if(updateStmt != null) {
+                    updateStmt.close();
+                }
+            } catch(SQLException sex) {
+                sex.printStackTrace();
+            }
+        }
+        return retVal;
+    }
+
+    public boolean batchCommand(String query, Object[] args) {
         connect();
         try {
             if(this.connection != null) {
@@ -42,8 +71,7 @@ public class DBUtilities implements DB {
                 batchStmt.addBatch();
                 updateCounter++;
 
-                if(forceUpdate ||
-                   updateCounter >= BATCH_SIZE) {
+                if(updateCounter >= BATCH_SIZE) {
                     executeBatch();
                 }
                 return true;

@@ -42,7 +42,7 @@ public class UChatSession extends Session {
         
             args = new Object[]{username, hashedPass, salt};
 
-            retVal = db.updateCommand(insertStmt, args, true);
+            retVal = db.updateCommand(insertStmt, args);
 
             if(retVal) {
                 this.username = username;

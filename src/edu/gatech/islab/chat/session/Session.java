@@ -25,7 +25,7 @@ public abstract class Session {
             Object[] args = new Object[]{this.username, System.currentTimeMillis(), operation};
             String userLogQuery = "INSERT INTO UserLog(Username, TStamp, Operation) " +
                 "VALUES(?, ?, ?);";
-            DBUtilities.getInstance().updateCommand(userLogQuery, args, false);
+            DBUtilities.getInstance().batchCommand(userLogQuery, args);
         }
     }
 
