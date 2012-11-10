@@ -32,16 +32,16 @@ public class MainHelper {
     public User getUser
         (String username, String uchatUsername, AccountType accountType, Operation operation) {
 
-        assert username !=  null && uchatUsername != null;
-
         User user = null;
 
-        user = getFromUserMap(uchatUsername, accountType);
+        if(username !=  null && uchatUsername != null) {
+            user = getFromUserMap(uchatUsername, accountType);
         
-        if(user == null && 
-           (operation == Operation.LOGIN || operation == Operation.REGISTER)) {
+            if(user == null && 
+               (operation == Operation.LOGIN || operation == Operation.REGISTER)) {
 
-            user = new User(username, username, accountType);
+                user = new User(username, username, accountType);
+            }
         }
 
         return user;

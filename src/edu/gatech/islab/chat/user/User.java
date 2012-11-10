@@ -18,12 +18,18 @@ public class User {
     
     public User(String username, String login, 
                 AccountType accountType) {
-        assert login != null;
-        assert username != null;
-        assert accountType != null && accountType != AccountType.NULL;
-        this.login = login;
-        this.username = username;
-        this.accountType = accountType;
+
+        if(login != null && 
+           username != null &&
+           accountType != null && 
+           accountType != AccountType.NULL) {
+            
+            this.login = login;
+            this.username = username;
+            this.accountType = accountType;
+        } else {
+            throw new NullPointerException("Invalid user object");
+        }
     }
 
     public AccountType getAccountType() {
@@ -39,8 +45,11 @@ public class User {
     }
 
     public void setSession(Session session) {
-        assert session != null;
-        this.session = session;
+        if(session != null) {
+            this.session = session;
+        } else {
+            throw new NullPointerException("Invalid session object");
+        }
     }
 
     public Session getSession() {

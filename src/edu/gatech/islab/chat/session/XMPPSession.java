@@ -12,11 +12,17 @@ public abstract class XMPPSession extends Session {
 
     @Override
     public boolean login(String username, String password) {
-        return getSession().login(username, password);
+        boolean retVal = getSession().login(username, password);
+        if(retVal) {
+            this.username = username;
+            this.logUser("LOGIN");
+        }
+        return retVal;
     }
 
     public void sendMessage(String message, User recipient) {
         getSession().sendMessage(message, recipient);
+        this.logUser("SENDMESSAGE");
     }
 
     public Map<User, List<String>> getMessages() {
@@ -29,7 +35,11 @@ public abstract class XMPPSession extends Session {
 
     @Override
     public boolean disconnect() {
-        return getSession().disconnect();
+        boolean retVal = getSession().disconnect();
+        if(retVal) {
+            this.logUser("LOGOUT");
+        }
+        return retVal;
     }
 
 }

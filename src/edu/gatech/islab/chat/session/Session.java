@@ -1,9 +1,12 @@
 package edu.gatech.islab.chat.session;
 
+import edu.gatech.islab.chat.db.DBUtilities;
+
 public abstract class Session {
 
     public String sessionId;
     public String sessionType;
+    public String username;
     
     public void setSessionId(String id) {
         this.sessionId = id;
@@ -16,6 +19,15 @@ public abstract class Session {
     public abstract boolean login(String username, String password);   
  
     public abstract boolean disconnect();
+
+    public void logUser(String operation) {
+        if(this.username != null && operation != null) {
+            Object[] args = new Object[]{this.username, System.currentTimeMillis(), operation};
+            String userLogQuery = "INSERT INTO UserLog(Username, TStamp, Operation) " +
+                "VALUES(?, ?, ?);";
+            DBUtilities.getInstance().updateCommand(userLogQuery, args);
+        }
+    }
 
     @Override
     public boolean equals(Object session) {

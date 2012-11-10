@@ -25,59 +25,67 @@ public class UChatSession extends Session {
             "WHERE Username = ?";
         validLoginQuery = "SELECT Username, Password, Salt FROM Users " +
             "WHERE Username = ?";
-
     }
 
     public String createUser(String username, String password) {
-        assert username != null;
-        assert password != null;
+        if(username != null &&  password != null) {
 
-        Object[] args = new Object[]{username};
+            Object[] args = new Object[]{username};
 
-        if(db.selectNonEmpty(userExistsQuery, args)) {
-            return "Username exists";
-        }
+            if(db.selectNonEmpty(userExistsQuery, args)) {
+                return "Username exists";
+            }
 
-        boolean retVal = false;
-        String salt = System.currentTimeMillis() + "";
-        String hashedPass = hashPassword(password, salt);
+            boolean retVal = false;
+            String salt = System.currentTimeMillis() + "";
+            String hashedPass = hashPassword(password, salt);
         
-        args = new Object[]{username, hashedPass, salt};
+            args = new Object[]{username, hashedPass, salt};
 
-        retVal = db.updateCommand(insertStmt, args);
+            retVal = db.updateCommand(insertStmt, args);
 
-        if(retVal) {
-            return "Success";
+            if(retVal) {
+                this.username = username;
+                this.logUser("REGISTER");
+                return "Success";
+            } else {
+                return "Account Creation Failed";
+            }
         } else {
-            return "Account Creation Failed";
+            return "Invalid Username or Password";
         }
     }
 
     @Override
     public boolean login(String username, String password) {
-        assert username != null;
-        assert password != null;
-
         boolean retVal = false;
-        Object[] args = new Object[]{username};
-        ResultSet result = db.selectCommand(validLoginQuery, args);
-        if(result!=null) {
-            try {
-                if(result.next()) {
-                    String resultPass = result.getString("Password");
-                    String resultSalt = result.getString("Salt");
-                    retVal = resultPass.equals(hashPassword(password, resultSalt));
+
+        if(username != null &&  password != null) {
+            Object[] args = new Object[]{username};
+            ResultSet result = db.selectCommand(validLoginQuery, args);
+            if(result!=null) {
+                try {
+                    if(result.next()) {
+                        String resultPass = result.getString("Password");
+                        String resultSalt = result.getString("Salt");
+                        retVal = resultPass.equals(hashPassword(password, resultSalt));
+                    }
+                    result.close();
+                } catch(SQLException ex) {
+                    ex.printStackTrace();
                 }
-                result.close();
-            } catch(SQLException ex) {
-                ex.printStackTrace();
             }
-        }
+            if(retVal) {
+                this.username = username;
+                this.logUser("LOGIN");
+            }
+        } 
         return retVal;
     }
 
     @Override
     public boolean disconnect() {
+        this.logUser("LOGOUT");
         return true;
     }
 
