@@ -16,6 +16,22 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `UserLog`
+--
+
+DROP TABLE IF EXISTS `UserLog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `UserLog` (
+  `Username` varchar(20) DEFAULT NULL,
+  `TStamp` bigint(20) DEFAULT NULL,
+  `Operation` varchar(30) DEFAULT NULL,
+  KEY `Username` (`Username`),
+  CONSTRAINT `UserLog_ibfk_1` FOREIGN KEY (`Username`) REFERENCES `Users` (`Username`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `Users`
 --
 
@@ -39,4 +55,4 @@ CREATE TABLE `Users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-11-07  6:38:48
+-- Dump completed on 2012-11-10  6:59:08
