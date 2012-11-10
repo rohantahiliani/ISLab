@@ -1,7 +1,7 @@
 package servlet;
 
+import edu.gatech.islab.chat.db.DBUtilities;
 import edu.gatech.islab.chat.main.Main;
-
 import edu.gatech.islab.chat.enums.*;
 
 import java.io.PrintWriter;
@@ -26,16 +26,19 @@ public class InfoSecLab extends HttpServlet {
 
     HashMap<String, Integer> failedRequests;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         obj = new Main();
         failedRequests = new HashMap<String, Integer>();
     }
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, java.io.IOException {
         response.getWriter().println("Not Supported");
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, java.io.IOException {
@@ -221,5 +224,10 @@ public class InfoSecLab extends HttpServlet {
                 break;
             }
         }
+    }
+
+    @Override
+    public void destroy() {
+        DBUtilities.close();
     }
 }

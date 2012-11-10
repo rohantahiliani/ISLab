@@ -12,6 +12,10 @@ public class DBUtilities implements DB {
 
     private static DBUtilities instance;
     private Connection connection;
+    private PreparedStatement batchStmt;
+
+    private final int BATCH_SIZE = 50;
+    private int updateCounter = 0;
 
     protected DBUtilities() {
 
@@ -24,29 +28,29 @@ public class DBUtilities implements DB {
         return instance;
     }
 
-    public boolean updateCommand(String query, Object[] args) {
+    public boolean updateCommand(String query, Object[] args, boolean forceUpdate) {
         connect();
-        PreparedStatement insertStmt = null;
         try {
             if(this.connection != null) {
-                insertStmt = this.connection.prepareStatement(query);
+                if(batchStmt == null || batchStmt.isClosed()) {
+                    batchStmt = this.connection.prepareStatement(query);
+                }
                 int i = 1;
                 for(Object arg: args) {
-                    insertStmt.setObject(i++, arg);
+                    batchStmt.setObject(i++, arg);
                 }
-                insertStmt.executeUpdate();
+                batchStmt.addBatch();
+                updateCounter++;
+
+                if(forceUpdate ||
+                   updateCounter >= BATCH_SIZE) {
+                    executeBatch();
+                }
                 return true;
             }
         } catch(SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-            	if(insertStmt != null) {
-                    insertStmt.close();
-            	}
-            } catch(SQLException ex) {
-            }
-        }
+        } 
         return false;
     }
 
@@ -92,11 +96,39 @@ public class DBUtilities implements DB {
                 String dbUrl = "jdbc:mysql://us-cdbr-east-02.cleardb.com/heroku_1b1fd0a7eae634e?autoReconnectForPools=true";
                 this.connection = DriverManager.getConnection
                     (dbUrl, username, password);
+                this.connection.setAutoCommit(false);
             }
         } catch(SQLException sex) {
             sex.printStackTrace();
         } catch(URISyntaxException uex) {
             uex.printStackTrace();
+        }
+    }
+
+    private void commit() throws SQLException{
+        if(this.connection != null) {
+            this.connection.commit();
+        }
+    }
+
+    private void executeBatch() throws SQLException{
+        if(batchStmt != null && !batchStmt.isClosed()) {
+            batchStmt.executeBatch();
+            commit();
+            updateCounter = 0;
+        }
+    }
+
+    public static synchronized void close() {
+        try {
+            DBUtilities db = getInstance();
+            db.executeBatch();
+            if(db.connection != null) {
+                db.connection.close();
+            }
+            db = null;
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
     }
 

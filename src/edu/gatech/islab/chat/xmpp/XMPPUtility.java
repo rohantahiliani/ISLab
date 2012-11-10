@@ -116,8 +116,8 @@ public abstract class XMPPUtility {
 
     public boolean disconnect() {
         this.connection.disconnect();
-        return this.connection.isAuthenticated() &&
-            this.connection.isConnected();
+        return !this.connection.isAuthenticated() &&
+            !this.connection.isConnected();
     }
 
 }

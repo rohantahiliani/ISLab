@@ -23,7 +23,7 @@ public class GoogleXMPPUtility extends XMPPUtility {
         for(RosterEntry entry: getRosterEntries()) {
             if(entry.getType().equals(ItemType.both)) {
                 User user = new User
-                    (entry.getUser(), entry.getName(), AccountType.GOOGLE);
+                    (entry.getUser(), entry.getUser(), AccountType.GOOGLE);
                 friends.add(user);
             }
         }
